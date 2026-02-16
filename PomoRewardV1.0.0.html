@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时光管理 - 任务与专注</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 思源宋体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2C5F2D',
+            secondary: '#97A97C',
+            accent: '#FF9F1C',
+            neutral: '#F5F2EA',
+            'neutral-dark': '#E5E1D8',
+            text: '#3D2B1F',
+            'text-light': '#6B5B47',
+            'reset-red': '#8B0000' 
+          },
+          fontFamily: {
+            sans: ['Noto Serif SC', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .transition-all-300 {
+        transition: all 0.3s ease;
+      }
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+      }
+      .paper-texture {
+        background-color: #F5F2EA;
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d9c9b0' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+      }
+    }
+  </style>
+</head>
+<body class="font-sans bg-neutral text-text min-h-screen">
+  <div class="container mx-auto px-4 py-8 relative">
+    <!-- 左上角说明按钮 -->
+    <button id="info-btn" class="absolute top-4 left-4 bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300 text-sm flex items-center">
+      <i class="fa fa-info-circle mr-2"></i>说明
+    </button>
+    
+    <!-- 全局重置按钮 -->
+    <button id="global-reset-btn" class="absolute top-4 right-4 text-reset-red hover:text-red-700 transition-all-300 text-sm">
+      重置
+    </button>
+
+    <!-- 标题区域 -->
+    <header class="mb-8 text-center">
+      <h1 class="text-4xl font-bold text-primary mb-2 text-shadow">时光管理</h1>
+      <!-- 日期显示 -->
+      <p id="current-date" class="text-text-light italic"></p>
+    </header>
+
+    <!-- 主内容区域 - 固定左右排布（PC）/上下（移动端） -->
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- 左侧：番茄钟（固定） -->
+      <div class="lg:w-1/2 bg-paper-texture rounded-xl shadow-lg p-6 relative overflow-hidden">
+        <div class="glass-effect rounded-xl p-8 relative z-10 h-full flex flex-col">
+          <h2 class="text-2xl font-semibold mb-6 text-center">专注时光</h2>
+          
+          <!-- 番茄钟显示 -->
+          <div class="flex flex-col items-center mb-8 flex-grow">
+            <div class="w-64 h-64 rounded-full bg-white shadow-md flex items-center justify-center mb-4 relative">
+              <svg class="w-full h-full" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#E5E1D8" stroke-width="8" />
+                <circle id="progress-circle" cx="50" cy="50" r="45" fill="none" stroke="#2C5F2D" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="0" transform="rotate(-90 50 50)" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="timer-display" class="text-5xl font-bold text-text">25:00</span>
+                <span id="timer-label" class="text-lg text-text-light mt-2">专注中</span>
+              </div>
+            </div>
+            
+            <!-- 专注模块选择 + 管理 -->
+            <div class="mb-6 w-full max-w-md">
+              <div class="flex justify-between items-center mb-2">
+                <label class="block text-text-light">专注模块</label>
+                <button id="manage-modules-btn" class="text-sm text-primary hover:underline">
+                  <i class="fa fa-cog mr-1"></i>管理模块
+                </button>
+              </div>
+              <div class="flex flex-wrap gap-2" id="focus-modules">
+                <!-- 模块按钮动态生成 -->
+              </div>
+            </div>
+            
+            <!-- 番茄钟控制按钮 -->
+            <div class="flex gap-4">
+              <button id="start-btn" class="bg-primary text-white px-6 py-3 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
+                <i class="fa fa-play mr-2"></i>开始
+              </button>
+              <button id="pause-btn" class="bg-text-light text-white px-6 py-3 rounded-lg shadow hover:bg-opacity-90 transition-all-300 hidden">
+                <i class="fa fa-pause mr-2"></i>暂停
+              </button>
+              <button id="reset-btn" class="bg-text-light text-white px-6 py-3 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
+                <i class="fa fa-refresh mr-2"></i>重置
+              </button>
+            </div>
+          </div>
+          
+          <!-- 番茄钟设置 -->
+          <div class="border-t border-neutral-dark pt-6 mt-auto">
+            <h3 class="text-xl font-semibold mb-4">设置</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-text-light mb-2">专注时长（分钟）</label>
+                <input type="number" id="focus-time" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="25" min="1" max="120">
+              </div>
+              <div>
+                <label class="block text-text-light mb-2">休息时长（分钟）</label>
+                <input type="number" id="break-time" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="5" min="1" max="30">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 右侧：任务和心愿（固定） -->
+      <div class="lg:w-1/2">
+        <!-- 积分显示 -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-semibold">我的积分</h2>
+            <div class="flex items-center">
+              <i class="fa fa-star text-accent text-2xl mr-2"></i>
+              <span id="points-display" class="text-3xl font-bold text-primary">0</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 选项卡切换 -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div class="flex border-b border-neutral-dark">
+            <button id="tasks-tab" class="flex-1 py-4 text-center font-medium text-primary border-b-2 border-primary">任务清单</button>
+            <button id="wishes-tab" class="flex-1 py-4 text-center font-medium text-text-light">心愿单</button>
+          </div>
+          
+          <!-- 任务清单内容 -->
+          <div id="tasks-content" class="p-6">
+            <!-- 任务列表 -->
+            <h3 class="text-xl font-semibold mb-4">任务列表</h3>
+            <div id="tasks-list" class="space-y-3 mb-6">
+              <!-- 任务项动态添加 -->
+              <div class="task-item bg-neutral rounded-lg p-4 flex items-center justify-between">
+                <div class="flex items-center">
+                  <input type="checkbox" class="task-checkbox w-5 h-5 mr-3 rounded border-neutral-dark text-primary focus:ring-secondary">
+                  <div>
+                    <h4 class="font-medium">完成示例任务</h4>
+                    <p class="text-sm text-text-light">奖励: 10积分</p>
+                  </div>
+                </div>
+                <div class="flex items-center">
+                  <span class="text-xs bg-secondary text-white px-2 py-1 rounded-full mr-2">普通任务</span>
+                  <button class="delete-task-btn text-text-light hover:text-red-500">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 添加任务表单 -->
+            <div class="bg-neutral rounded-lg p-4">
+              <h3 class="text-xl font-semibold mb-4">添加新任务</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="md:col-span-2">
+                  <label class="block text-text-light mb-2">任务名称</label>
+                  <input type="text" id="task-title" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="输入任务名称">
+                </div>
+                <div>
+                  <label class="block text-text-light mb-2">积分奖励</label>
+                  <input type="number" id="task-points" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="10" min="1" max="100">
+                </div>
+                <div>
+                  <label class="block text-text-light mb-2">任务类型</label>
+                  <select id="task-type" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary">
+                    <option value="normal">普通任务</option>
+                    <option value="habit">习惯任务</option>
+                  </select>
+                </div>
+                <div id="habit-options-container" class="hidden md:col-span-2">
+                  <label class="block text-text-light mb-2">习惯任务设置</label>
+                  <div class="flex items-center gap-4">
+                    <div class="flex items-center">
+                      <input type="checkbox" id="habit-is-daily" class="w-5 h-5 mr-2 rounded border-neutral-dark text-primary focus:ring-secondary">
+                      <label for="habit-is-daily">每天重复（永久）</label>
+                    </div>
+                    <div id="habit-days-container" class="flex-1">
+                      <label class="block text-text-light mb-2">持续天数（非永久时生效）</label>
+                      <input type="number" id="habit-days" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="7" min="1" max="365">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button id="add-task-btn" class="bg-primary text-white px-6 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
+                <i class="fa fa-plus mr-2"></i>添加任务
+              </button>
+            </div>
+          </div>
+          
+          <!-- 心愿单内容 -->
+          <div id="wishes-content" class="p-6 hidden">
+            <!-- 心愿列表 -->
+            <h3 class="text-xl font-semibold mb-4">心愿列表</h3>
+            <div id="wishes-list" class="space-y-3 mb-6">
+              <!-- 心愿项动态添加 -->
+              <div class="wish-item bg-neutral rounded-lg p-4">
+                <div class="flex justify-between items-start mb-2">
+                  <h4 class="font-medium">购买新书</h4>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm bg-accent text-white px-2 py-1 rounded-full">50积分</span>
+                    <button class="delete-wish-btn text-text-light hover:text-red-500" data-id="demo">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+                <p class="text-sm text-text-light mb-3">一本关于时间管理的书籍</p>
+                <button class="redeem-wish-btn bg-primary text-white px-4 py-1 rounded-lg text-sm shadow hover:bg-opacity-90 transition-all-300">
+                  兑换心愿
+                </button>
+              </div>
+            </div>
+            
+            <!-- 添加心愿表单 -->
+            <div class="bg-neutral rounded-lg p-4">
+              <h3 class="text-xl font-semibold mb-4">添加新心愿</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="md:col-span-2">
+                  <label class="block text-text-light mb-2">心愿名称</label>
+                  <input type="text" id="wish-title" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="输入心愿名称">
+                </div>
+                <div>
+                  <label class="block text-text-light mb-2">所需积分</label>
+                  <input type="number" id="wish-points" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="50" min="1" max="1000">
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-text-light mb-2">心愿描述（可选）</label>
+                  <textarea id="wish-description" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" rows="2" placeholder="描述你的心愿"></textarea>
+                </div>
+              </div>
+              <button id="add-wish-btn" class="bg-primary text-white px-6 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
+                <i class="fa fa-plus mr-2"></i>添加心愿
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 说明模态框 -->
+  <div id="info-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b border-neutral-dark">
+        <h3 class="text-2xl font-semibold text-primary">关于时光管理</h3>
+        <button id="close-info-modal" class="text-text-light hover:text-text text-xl">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <!-- 功能说明 -->
+      <div class="mb-8">
+        <h4 class="text-xl font-semibold mb-4 flex items-center">
+          <i class="fa fa-list-ul text-primary mr-2"></i>功能说明
+        </h4>
+        <div class="space-y-3 text-text-light">
+          <div class="bg-neutral p-4 rounded-lg">
+            <h5 class="font-medium text-text mb-2">🍅 专注番茄钟</h5>
+            <p>自定义专注时长和休息时长，选择不同的专注模块获得对应积分奖励，帮助你高效专注完成任务。</p>
+          </div>
+          <div class="bg-neutral p-4 rounded-lg">
+            <h5 class="font-medium text-text mb-2">📋 任务管理</h5>
+            <p>支持添加普通任务和习惯任务，习惯任务可设置每日重复或限时完成，完成任务获得积分奖励。</p>
+          </div>
+          <div class="bg-neutral p-4 rounded-lg">
+            <h5 class="font-medium text-text mb-2">⭐ 心愿清单</h5>
+            <p>添加心愿并设置所需积分，用完成任务和专注获得的积分兑换心愿，激励自己持续进步。</p>
+          </div>
+          <div class="bg-neutral p-4 rounded-lg">
+            <h5 class="font-medium text-text mb-2">🔧 模块管理</h5>
+            <p>自定义专注模块，设置不同模块的积分奖励，适配不同类型的专注场景。</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 作者信息 -->
+      <div class="mb-8">
+        <h4 class="text-xl font-semibold mb-4 flex items-center">
+          <i class="fa fa-user text-primary mr-2"></i>作者信息
+        </h4>
+        <div class="bg-neutral p-4 rounded-lg">
+          <p class="mb-2"><span class="font-medium text-text">作者：</span>芙蕾Frey</p>
+          <p class="mb-2"><span class="font-medium text-text">邮箱：</span>1799504732@qq.com</p>
+          <p class="mb-2"><span class="font-medium text-text">微信：</span>frey15919965737</p>
+        </div>
+      </div>
+      
+      <!-- 版本信息 -->
+      <div class="mb-8">
+        <h4 class="text-xl font-semibold mb-4 flex items-center">
+          <i class="fa fa-tag text-primary mr-2"></i>版本信息
+        </h4>
+        <div class="bg-neutral p-4 rounded-lg">
+          <p class="mb-2"><span class="font-medium text-text">版本号：</span>v1.0.0</p>
+          <p class="mb-2"><span class="font-medium text-text">更新日期：</span>2026-02-15</p>
+          <p><span class="font-medium text-text">更新说明：</span>初始版本发布，包含番茄钟、任务管理、心愿清单等核心功能</p>
+        </div>
+      </div>
+      
+      <!-- GitHub链接 -->
+      <div>
+        <h4 class="text-xl font-semibold mb-4 flex items-center">
+          <i class="fa fa-github text-primary mr-2"></i>开源地址
+        </h4>
+        <div class="bg-neutral p-4 rounded-lg">
+          <a href="https://github.com/freytesla/PomoReward" target="_blank" id="github-link" class="flex items-center text-primary hover:underline">
+            <i class="fa fa-github-square text-2xl mr-3"></i>
+            <span>https://github.com/freytesla/PomoReward</span>
+          </a>
+          <p class="mt-3 text-sm text-text-light">欢迎Star、Fork和提Issue！</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 专注模块管理模态框 -->
+  <div id="module-manager-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-semibold">管理专注模块</h3>
+        <button id="close-module-manager" class="text-text-light hover:text-text">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <!-- 添加新模块 -->
+      <div class="border-b border-neutral-dark pb-4 mb-4">
+        <h4 class="font-medium mb-3">添加新模块</h4>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <label class="block text-text-light text-sm mb-1">模块名称</label>
+            <input type="text" id="new-module-name" class="w-full px-3 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary text-sm" placeholder="例如：绘画">
+          </div>
+          <div>
+            <label class="block text-text-light text-sm mb-1">每分钟积分</label>
+            <input type="number" id="new-module-points" class="w-full px-3 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary text-sm" value="1" min="1" max="10">
+          </div>
+        </div>
+        <button id="add-new-module" class="bg-primary text-white px-4 py-2 rounded-lg text-sm shadow hover:bg-opacity-90 transition-all-300">
+          <i class="fa fa-plus mr-1"></i>添加
+        </button>
+      </div>
+      
+      <!-- 现有模块列表 -->
+      <div>
+        <h4 class="font-medium mb-3">现有模块</h4>
+        <div id="module-list" class="space-y-2 max-h-60 overflow-y-auto">
+          <!-- 模块项动态生成 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 编辑模块模态框 -->
+  <div id="edit-module-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+      <h3 class="text-xl font-semibold mb-4">编辑模块</h3>
+      <input type="hidden" id="edit-module-id">
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label class="block text-text-light text-sm mb-1">模块名称</label>
+          <input type="text" id="edit-module-name" class="w-full px-3 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary text-sm">
+        </div>
+        <div>
+          <label class="block text-text-light text-sm mb-1">每分钟积分</label>
+          <input type="number" id="edit-module-points" class="w-full px-3 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary text-sm" min="1" max="10">
+        </div>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button id="cancel-edit-module" class="px-4 py-2 border border-neutral-dark rounded-lg hover:bg-neutral transition-all-300 text-sm">取消</button>
+        <button id="save-edit-module" class="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300 text-sm">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 自定义专注模块模态框（兼容旧逻辑） -->
+  <div id="custom-module-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+      <h3 class="text-xl font-semibold mb-4">自定义专注模块</h3>
+      <div class="mb-4">
+        <label class="block text-text-light mb-2">模块名称</label>
+        <input type="text" id="custom-module-name" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="输入模块名称">
+      </div>
+      <div class="mb-6">
+        <label class="block text-text-light mb-2">每分钟积分</label>
+        <input type="number" id="custom-module-points" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="1" min="1" max="10">
+      </div>
+      <div class="flex justify-end gap-3">
+        <button id="cancel-custom-module" class="px-4 py-2 border border-neutral-dark rounded-lg hover:bg-neutral transition-all-300">取消</button>
+        <button id="save-custom-module" class="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全局重置确认模态框 -->
+  <div id="global-reset-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+      <div class="text-center mb-6">
+        <i class="fa fa-warning text-4xl text-amber-500 mb-4"></i>
+        <h3 class="text-xl font-semibold text-red-500">警告！</h3>
+        <p class="text-text-light mt-2">此操作将清空所有任务、心愿、积分和自定义模块，恢复到初始状态。</p>
+        <p class="text-red-500 font-medium mt-1">该操作不可撤销！</p>
+      </div>
+      <div class="flex justify-center gap-4">
+        <button id="cancel-global-reset" class="px-6 py-2 border border-neutral-dark rounded-lg hover:bg-neutral transition-all-300">
+          取消
+        </button>
+        <button id="confirm-global-reset" class="px-6 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition-all-300">
+          确认重置
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提示弹窗 -->
+  <div id="task-complete-toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all-300 z-50 flex items-center">
+    <i class="fa fa-check text-2xl mr-3"></i>
+    <div>
+      <p class="font-medium">任务完成！</p>
+      <p class="text-sm" id="task-complete-points">获得 10 积分</p>
+    </div>
+  </div>
+
+  <div id="wish-redeem-toast" class="fixed bottom-4 right-4 bg-accent text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all-300 z-50 flex items-center">
+    <i class="fa fa-star text-2xl mr-3"></i>
+    <div>
+      <p class="font-medium">心愿兑换成功！</p>
+      <p class="text-sm" id="wish-redeem-message">恭喜你实现了心愿</p>
+    </div>
+  </div>
+
+  <div id="focus-complete-toast" class="fixed bottom-4 right-4 bg-primary text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all-300 z-50 flex items-center">
+    <i class="fa fa-check-circle text-2xl mr-3"></i>
+    <div>
+      <p class="font-medium">专注时间完成！</p>
+      <p class="text-sm" id="focus-complete-points">获得 25 积分</p>
+    </div>
+  </div>
+
+  <script>
+    // 工具函数：格式化日期显示
+    function formatCurrentDate() {
+      const now = new Date();
+      // 定义中文星期名称
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      
+      // 获取日期组件
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1; // 月份从0开始，所以+1
+      const day = now.getDate();
+      const weekday = weekdays[now.getDay()];
+      
+      // 格式化显示（例如：2026年2月15日 星期日）
+      return `${year}年${month}月${day}日 ${weekday}`;
+    }
+
+    // 渲染当前日期到页面
+    function renderCurrentDate() {
+      const dateElement = document.getElementById('current-date');
+      if (dateElement) {
+        dateElement.textContent = formatCurrentDate();
+      }
+    }
+
+    // 定时检查并更新日期（核心自动更新逻辑）
+    function setupAutoDateUpdate() {
+      // 初始化先渲染一次
+      renderCurrentDate();
+
+      // 每隔1分钟检查一次（1分钟=60*1000毫秒）
+      setInterval(() => {
+        // 重新渲染日期（即使没跨天，也能处理时分秒级的修正）
+        renderCurrentDate();
+        
+        // 【可选优化】仅当日期发生变化时才更新（减少DOM操作）
+        // const currentDisplay = document.getElementById('current-date').textContent;
+        // const newDate = formatCurrentDate();
+        // if (currentDisplay !== newDate) {
+        //   renderCurrentDate();
+        // }
+      }, 60 * 1000);
+    }
+
+    // 数据管理
+    const AppData = {
+      tasks: [],
+      wishes: [],
+      points: 0,
+      // 初始模块
+      focusModules: [
+        { id: 'default', name: '默认', pointsPerMinute: 1 },
+        { id: 'reading', name: '阅读', pointsPerMinute: 2 },
+        { id: 'coding', name: '编程', pointsPerMinute: 3 }
+      ],
+      currentFocusModule: 'default',
+      settings: {
+        focusTime: 25,
+        breakTime: 5
+      },
+      
+      // 初始化数据
+      init() {
+        const savedData = localStorage.getItem('timeManagementApp');
+        if (savedData) {
+          const parsedData = JSON.parse(savedData);
+          this.tasks = parsedData.tasks || [];
+          this.wishes = parsedData.wishes || [];
+          this.points = parsedData.points || 0;
+          this.focusModules = parsedData.focusModules || this.focusModules;
+          this.currentFocusModule = parsedData.currentFocusModule || 'default';
+          this.settings = parsedData.settings || this.settings;
+          this.checkHabitTasks();
+        }
+        // 确保至少保留一个模块
+        if (this.focusModules.length === 0) {
+          this.focusModules.push({ id: 'default', name: '默认', pointsPerMinute: 1 });
+          this.currentFocusModule = 'default';
+        }
+        this.saveData();
+      },
+      
+      // 保存数据到localStorage
+      saveData() {
+        const dataToSave = {
+          tasks: this.tasks,
+          wishes: this.wishes,
+          points: this.points,
+          focusModules: this.focusModules,
+          currentFocusModule: this.currentFocusModule,
+          settings: this.settings
+        };
+        localStorage.setItem('timeManagementApp', JSON.stringify(dataToSave));
+      },
+      
+      // 全局重置（恢复初始状态）
+      resetAll() {
+        // 重置为初始数据
+        this.tasks = [];
+        this.wishes = [];
+        this.points = 0;
+        this.focusModules = [
+          { id: 'default', name: '默认', pointsPerMinute: 1 },
+          { id: 'reading', name: '阅读', pointsPerMinute: 2 },
+          { id: 'coding', name: '编程', pointsPerMinute: 3 }
+        ];
+        this.currentFocusModule = 'default';
+        this.settings = {
+          focusTime: 25,
+          breakTime: 5
+        };
+        this.saveData();
+      },
+      
+      // 添加任务
+      addTask(title, points, type, habitDays = 0, isDaily = false) {
+        const task = {
+          id: Date.now().toString(),
+          title,
+          points: parseInt(points),
+          type,
+          completed: false,
+          createdAt: new Date().toISOString(),
+          isDaily: type === 'habit' ? isDaily : false, // 是否每天重复
+          habitDays: type === 'habit' && !isDaily ? parseInt(habitDays) : 0,
+          expireDate: type === 'habit' && !isDaily ? this.calculateExpireDate(habitDays) : null
+        };
+        this.tasks.push(task);
+        this.saveData();
+        return task;
+      },
+      
+      // 计算习惯任务的过期日期
+      calculateExpireDate(days) {
+        const date = new Date();
+        date.setDate(date.getDate() + days);
+        return date.toISOString();
+      },
+      
+      // 完成任务
+      completeTask(taskId) {
+        const task = this.tasks.find(t => t.id === taskId);
+        if (task && !task.completed) {
+          task.completed = true;
+          task.completedAt = new Date().toISOString();
+          this.points += task.points;
+          this.saveData();
+          return task.points;
+        }
+        return 0;
+      },
+      
+      // 删除任务
+      deleteTask(taskId) {
+        this.tasks = this.tasks.filter(t => t.id !== taskId);
+        this.saveData();
+      },
+
+      //删除心愿方法
+      deleteWish(wishId) {
+        this.wishes = this.wishes.filter(w => w.id !== wishId);
+        this.saveData();
+      },
+      
+      // 检查习惯任务是否需要重置
+      checkHabitTasks() {
+        const today = new Date().toDateString();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayString = yesterday.toDateString();
+        
+        this.tasks.forEach(task => {
+          if (task.type === 'habit' && task.completed) {
+            const completedDate = new Date(task.completedAt).toDateString();
+            // 无论是否永久，只要是昨天完成的都重置
+            if (completedDate === yesterdayString) {
+              task.completed = false;
+              delete task.completedAt;
+            }
+          }
+          // 只清理非永久且过期的习惯任务
+          if (task.type === 'habit' && !task.isDaily && task.expireDate) {
+            const expireDate = new Date(task.expireDate);
+            if (new Date() > expireDate) {
+              this.tasks = this.tasks.filter(t => t.id !== task.id); // 修复：原代码用了未定义的taskId
+            }
+          }
+        });
+        this.saveData();
+      },
+      
+      // 添加心愿
+      addWish(title, points, description = '') {
+        const wish = {
+          id: Date.now().toString(),
+          title,
+          points: parseInt(points),
+          description,
+          redeemed: false,
+          createdAt: new Date().toISOString()
+        };
+        this.wishes.push(wish);
+        this.saveData();
+        return wish;
+      },
+      
+      // 兑换心愿
+      redeemWish(wishId) {
+        const wish = this.wishes.find(w => w.id === wishId);
+        if (wish && !wish.redeemed && this.points >= wish.points) {
+          wish.redeemed = true;
+          wish.redeemedAt = new Date().toISOString();
+          this.points -= wish.points;
+          this.saveData();
+          return true;
+        }
+        return false;
+      },
+      
+      // 添加自定义专注模块
+      addFocusModule(name, pointsPerMinute) {
+        const module = {
+          id: 'custom-' + Date.now().toString(),
+          name,
+          pointsPerMinute: parseInt(pointsPerMinute)
+        };
+        this.focusModules.push(module);
+        this.currentFocusModule = module.id;
+        this.saveData();
+        return module;
+      },
+      
+      // 编辑专注模块（所有模块都可编辑）
+      editFocusModule(moduleId, newName, newPoints) {
+        const module = this.focusModules.find(m => m.id === moduleId);
+        if (module) {
+          module.name = newName;
+          module.pointsPerMinute = parseInt(newPoints);
+          this.saveData();
+          return true;
+        }
+        return false;
+      },
+      
+      // 删除专注模块（所有模块都可删除，至少保留一个）
+      deleteFocusModule(moduleId) {
+        // 确保至少保留一个模块
+        if (this.focusModules.length <= 1) {
+          alert('至少需要保留一个专注模块！');
+          return false;
+        }
+        
+        const moduleIndex = this.focusModules.findIndex(m => m.id === moduleId);
+        if (moduleIndex !== -1) {
+          // 如果删除的是当前选中的模块，切换到第一个模块
+          if (this.currentFocusModule === moduleId) {
+            this.currentFocusModule = this.focusModules[0].id !== moduleId 
+              ? this.focusModules[0].id 
+              : this.focusModules[1].id;
+          }
+          this.focusModules.splice(moduleIndex, 1);
+          this.saveData();
+          return true;
+        }
+        return false;
+      },
+      
+      // 获取当前专注模块
+      getCurrentFocusModule() {
+        return this.focusModules.find(m => m.id === this.currentFocusModule) || this.focusModules[0];
+      },
+      
+      // 更新设置
+      updateSettings(focusTime, breakTime) {
+        this.settings.focusTime = parseInt(focusTime);
+        this.settings.breakTime = parseInt(breakTime);
+        this.saveData();
+      }
+    };
+    
+    // 番茄钟功能
+    const PomodoroTimer = {
+      timer: null,
+      timeLeft: 25 * 60,
+      isRunning: false,
+      isBreak: false,
+      
+      // 初始化番茄钟
+      init() {
+        this.timeLeft = AppData.settings.focusTime * 60;
+        this.updateDisplay();
+        this.setupEventListeners();
+      },
+      
+      // 设置事件监听器
+      setupEventListeners() {
+        document.getElementById('start-btn').addEventListener('click', () => this.start());
+        document.getElementById('pause-btn').addEventListener('click', () => this.pause());
+        document.getElementById('reset-btn').addEventListener('click', () => this.reset());
+        
+        document.getElementById('focus-time').addEventListener('change', (e) => {
+          AppData.updateSettings(e.target.value, AppData.settings.breakTime);
+          if (!this.isRunning) {
+            this.reset();
+          }
+        });
+        
+        document.getElementById('break-time').addEventListener('change', (e) => {
+          AppData.updateSettings(AppData.settings.focusTime, e.target.value);
+        });
+      },
+      
+      // 开始计时器
+      // 在 PomodoroTimer 的 start 方法中补充积分累加逻辑
+start() {
+  if (this.isRunning) return;
+  this.isRunning = true;
+  document.getElementById('start-btn').classList.add('hidden');
+  document.getElementById('pause-btn').classList.remove('hidden');
+  
+  // 记录当前已累计的分钟数（避免重复累加）
+  let accumulatedMinutes = 0;
+  const totalSeconds = this.timeLeft;
+  
+  this.timer = setInterval(() => {
+    this.timeLeft--;
+    this.updateDisplay();
+    
+    // 计算已过去的分钟数（向下取整）
+    const passedSeconds = totalSeconds - this.timeLeft;
+    const currentMinutes = Math.floor(passedSeconds / 60);
+    
+    // 每满1分钟，累加对应积分
+    if (currentMinutes > accumulatedMinutes) {
+      accumulatedMinutes = currentMinutes;
+      // 获取当前模块的每分钟积分
+      const currentModule = AppData.getCurrentFocusModule();
+      const pointsToAdd = currentModule.pointsPerMinute;
+      // 累加积分并保存
+      AppData.points += pointsToAdd;
+      AppData.saveData();
+      // 更新页面积分显示
+      document.getElementById('points-display').textContent = AppData.points;
+    }
+    
+    if (this.timeLeft <= 0) {
+      this.complete();
+    }
+  }, 1000);
+},
+      
+      // 暂停计时器
+      pause() {
+        if (this.isRunning) {
+          this.isRunning = false;
+          clearInterval(this.timer);
+          document.getElementById('start-btn').classList.remove('hidden');
+          document.getElementById('pause-btn').classList.add('hidden');
+        }
+      },
+      
+      // 重置计时器
+      reset() {
+        this.pause();
+        this.isBreak = false;
+        this.timeLeft = AppData.settings.focusTime * 60;
+        this.updateDisplay();
+        document.getElementById('timer-label').textContent = '专注中';
+      },
+      
+      // 完成当前计时
+      complete() {
+        this.pause();
+        
+        if (!this.isBreak) {
+          // 专注时间完成，获得积分
+          const module = AppData.getCurrentFocusModule();
+          const pointsEarned = AppData.settings.focusTime * module.pointsPerMinute;
+          AppData.points += pointsEarned;
+          AppData.saveData();
+          UI.updatePointsDisplay();
+          UI.showToast('focus-complete-toast', `获得 ${pointsEarned} 积分`);
+          
+          // 切换到休息时间
+          this.isBreak = true;
+          this.timeLeft = AppData.settings.breakTime * 60;
+          document.getElementById('timer-label').textContent = '休息中';
+          this.updateDisplay();
+        } else {
+          // 休息时间完成，重置到专注时间
+          this.isBreak = false;
+          this.timeLeft = AppData.settings.focusTime * 60;
+          document.getElementById('timer-label').textContent = '专注中';
+          this.updateDisplay();
+        }
+      },
+      
+      // 更新显示
+      updateDisplay() {
+        const minutes = Math.floor(this.timeLeft / 60);
+        const seconds = this.timeLeft % 60;
+        const displayTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        document.getElementById('timer-display').textContent = displayTime;
+        
+        // 更新进度条
+        const totalTime = this.isBreak ? AppData.settings.breakTime * 60 : AppData.settings.focusTime * 60;
+        const progress = (1 - this.timeLeft / totalTime) * 283;
+        document.getElementById('progress-circle').style.strokeDashoffset = 283 - progress;
+      }
+    };
+    
+    // UI管理
+    const UI = {
+      // 初始化UI
+      init() {
+        // 调用自动更新日期的方法
+        setupAutoDateUpdate();
+        
+        this.setupEventListeners();
+        this.renderFocusModules();
+        this.renderTasks();
+        this.renderWishes();
+        this.updatePointsDisplay();
+        
+        // 初始化选项卡切换
+        this.setupTabs();
+        
+        // 初始化习惯任务选项显示
+        this.setupHabitOptions();
+      },
+      
+      // 移除原有的setCurrentDateDisplay方法，替换为调用renderCurrentDate
+      
+      // 设置选项卡切换
+      setupTabs() {
+        const tasksTab = document.getElementById('tasks-tab');
+        const wishesTab = document.getElementById('wishes-tab');
+        const tasksContent = document.getElementById('tasks-content');
+        const wishesContent = document.getElementById('wishes-content');
+        
+        tasksTab.addEventListener('click', () => {
+          tasksTab.classList.add('text-primary', 'border-b-2', 'border-primary');
+          tasksTab.classList.remove('text-text-light');
+          wishesTab.classList.remove('text-primary', 'border-b-2', 'border-primary');
+          wishesTab.classList.add('text-text-light');
+          tasksContent.classList.remove('hidden');
+          wishesContent.classList.add('hidden');
+        });
+        
+        wishesTab.addEventListener('click', () => {
+          wishesTab.classList.add('text-primary', 'border-b-2', 'border-primary');
+          wishesTab.classList.remove('text-text-light');
+          tasksTab.classList.remove('text-primary', 'border-b-2', 'border-primary');
+          tasksTab.classList.add('text-text-light');
+          wishesContent.classList.remove('hidden');
+          tasksContent.classList.add('hidden');
+        });
+      },
+      
+      // 设置习惯任务选项显示/隐藏
+      setupHabitOptions() {
+        const taskTypeSelect = document.getElementById('task-type');
+        const habitOptionsContainer = document.getElementById('habit-options-container');
+        const habitIsDaily = document.getElementById('habit-is-daily');
+        const habitDaysContainer = document.getElementById('habit-days-container');
+        
+        // 初始检查
+        if (taskTypeSelect.value === 'habit') {
+          habitOptionsContainer.classList.remove('hidden');
+        }
+        
+        // 任务类型切换
+        taskTypeSelect.addEventListener('change', () => {
+          if (taskTypeSelect.value === 'habit') {
+            habitOptionsContainer.classList.remove('hidden');
+          } else {
+            habitOptionsContainer.classList.add('hidden');
+          }
+        });
+        
+        // 每日重复切换
+        habitIsDaily.addEventListener('change', () => {
+          if (habitIsDaily.checked) {
+            habitDaysContainer.classList.add('hidden');
+          } else {
+            habitDaysContainer.classList.remove('hidden');
+          }
+        });
+      },
+      
+      // 设置事件监听器
+      setupEventListeners() {
+        // 添加任务
+        document.getElementById('add-task-btn').addEventListener('click', () => {
+          const title = document.getElementById('task-title').value.trim();
+          const points = document.getElementById('task-points').value;
+          const type = document.getElementById('task-type').value;
+          
+          if (!title) {
+            alert('请输入任务名称！');
+            return;
+          }
+          
+          let habitDays = 0;
+          let isDaily = false;
+          
+          if (type === 'habit') {
+            isDaily = document.getElementById('habit-is-daily').checked;
+            if (!isDaily) {
+              habitDays = document.getElementById('habit-days').value;
+            }
+          }
+          
+          AppData.addTask(title, points, type, habitDays, isDaily);
+          this.renderTasks();
+          
+          // 清空表单
+          document.getElementById('task-title').value = '';
+          document.getElementById('task-points').value = '10';
+          document.getElementById('task-type').value = 'normal';
+          document.getElementById('habit-options-container').classList.add('hidden');
+          document.getElementById('habit-is-daily').checked = false;
+          document.getElementById('habit-days').value = '7';
+        });
+        
+        // 添加心愿
+        document.getElementById('add-wish-btn').addEventListener('click', () => {
+          const title = document.getElementById('wish-title').value.trim();
+          const points = document.getElementById('wish-points').value;
+          const description = document.getElementById('wish-description').value.trim();
+          
+          if (!title) {
+            alert('请输入心愿名称！');
+            return;
+          }
+          
+          AppData.addWish(title, points, description);
+          this.renderWishes();
+          
+          // 清空表单
+          document.getElementById('wish-title').value = '';
+          document.getElementById('wish-points').value = '50';
+          document.getElementById('wish-description').value = '';
+        });
+        
+        // 管理模块按钮
+        document.getElementById('manage-modules-btn').addEventListener('click', () => {
+          this.openModuleManager();
+        });
+        
+        // 关闭模块管理
+        document.getElementById('close-module-manager').addEventListener('click', () => {
+          this.closeModuleManager();
+        });
+        
+        // 添加新模块
+        document.getElementById('add-new-module').addEventListener('click', () => {
+          const name = document.getElementById('new-module-name').value.trim();
+          const points = document.getElementById('new-module-points').value;
+          
+          if (!name) {
+            alert('请输入模块名称！');
+            return;
+          }
+          
+          AppData.addFocusModule(name, points);
+          this.renderFocusModules();
+          this.renderModuleList();
+          
+          // 清空表单
+          document.getElementById('new-module-name').value = '';
+          document.getElementById('new-module-points').value = '1';
+        });
+        
+        // 关闭编辑模块模态框
+        document.getElementById('cancel-edit-module').addEventListener('click', () => {
+          this.closeEditModuleModal();
+        });
+        
+        // 保存编辑模块
+        document.getElementById('save-edit-module').addEventListener('click', () => {
+          const moduleId = document.getElementById('edit-module-id').value;
+          const newName = document.getElementById('edit-module-name').value.trim();
+          const newPoints = document.getElementById('edit-module-points').value;
+          
+          if (!newName) {
+            alert('请输入模块名称！');
+            return;
+          }
+          
+          AppData.editFocusModule(moduleId, newName, newPoints);
+          this.renderFocusModules();
+          this.renderModuleList();
+          this.closeEditModuleModal();
+        });
+        
+        // 取消自定义模块
+        document.getElementById('cancel-custom-module').addEventListener('click', () => {
+          this.closeCustomModuleModal();
+        });
+        
+        // 保存自定义模块
+        document.getElementById('save-custom-module').addEventListener('click', () => {
+          const name = document.getElementById('custom-module-name').value.trim();
+          const points = document.getElementById('custom-module-points').value;
+          
+          if (!name) {
+            alert('请输入模块名称！');
+            return;
+          }
+          
+          AppData.addFocusModule(name, points);
+          this.renderFocusModules();
+          this.closeCustomModuleModal();
+        });
+        
+        // 说明按钮
+        document.getElementById('info-btn').addEventListener('click', () => {
+          document.getElementById('info-modal').classList.remove('hidden');
+        });
+        
+        // 关闭说明模态框
+        document.getElementById('close-info-modal').addEventListener('click', () => {
+          document.getElementById('info-modal').classList.add('hidden');
+        });
+        
+        // 全局重置按钮
+        document.getElementById('global-reset-btn').addEventListener('click', () => {
+          document.getElementById('global-reset-modal').classList.remove('hidden');
+        });
+        
+        // 取消全局重置
+        document.getElementById('cancel-global-reset').addEventListener('click', () => {
+          document.getElementById('global-reset-modal').classList.add('hidden');
+        });
+        
+        // 确认全局重置
+        document.getElementById('confirm-global-reset').addEventListener('click', () => {
+          AppData.resetAll();
+          this.renderFocusModules();
+          this.renderTasks();
+          this.renderWishes();
+          this.updatePointsDisplay();
+          PomodoroTimer.reset();
+          document.getElementById('global-reset-modal').classList.add('hidden');
+        });
+      },
+      
+      // 打开模块管理
+      openModuleManager() {
+        this.renderModuleList();
+        document.getElementById('module-manager-modal').classList.remove('hidden');
+      },
+      
+      // 关闭模块管理
+      closeModuleManager() {
+        document.getElementById('module-manager-modal').classList.add('hidden');
+      },
+      
+      // 打开编辑模块模态框
+      openEditModuleModal(moduleId) {
+        const module = AppData.focusModules.find(m => m.id === moduleId);
+        if (module) {
+          document.getElementById('edit-module-id').value = moduleId;
+          document.getElementById('edit-module-name').value = module.name;
+          document.getElementById('edit-module-points').value = module.pointsPerMinute;
+          document.getElementById('edit-module-modal').classList.remove('hidden');
+        }
+      },
+      
+      // 关闭编辑模块模态框
+      closeEditModuleModal() {
+        document.getElementById('edit-module-modal').classList.add('hidden');
+      },
+      
+      // 打开自定义模块模态框
+      openCustomModuleModal() {
+        document.getElementById('custom-module-modal').classList.remove('hidden');
+      },
+      
+      // 关闭自定义模块模态框
+      closeCustomModuleModal() {
+        document.getElementById('custom-module-modal').classList.add('hidden');
+      },
+      
+      // 渲染专注模块 - 
+      renderFocusModules() {
+        const container = document.getElementById('focus-modules');
+        container.innerHTML = '';
+        
+        AppData.focusModules.forEach(module => {
+          const btn = document.createElement('button');
+          btn.className = `px-4 py-2 rounded-lg text-sm transition-all-300 ${AppData.currentFocusModule === module.id ? 'bg-primary text-white' : 'bg-neutral-dark text-text hover:bg-secondary hover:text-white'}`;
+          // 仅保留模块名称，删除积分相关的显示内容
+          btn.textContent = module.name;
+          btn.addEventListener('click', () => {
+            AppData.currentFocusModule = module.id;
+            AppData.saveData();
+            this.renderFocusModules();
+          });
+          container.appendChild(btn);
+        });
+        
+        // 添加自定义模块按钮
+        const customBtn = document.createElement('button');
+        customBtn.className = 'px-4 py-2 rounded-lg text-sm bg-accent text-white hover:bg-opacity-90 transition-all-300';
+        customBtn.innerHTML = '<i class="fa fa-plus mr-1"></i>自定义';
+        customBtn.addEventListener('click', () => {
+          this.openCustomModuleModal();
+        });
+        container.appendChild(customBtn);
+      },
+      
+      // 渲染模块列表（管理用）
+      renderModuleList() {
+        const container = document.getElementById('module-list');
+        container.innerHTML = '';
+        
+        AppData.focusModules.forEach(module => {
+          const item = document.createElement('div');
+          item.className = 'flex justify-between items-center bg-neutral rounded-lg p-3';
+          
+          const info = document.createElement('div');
+          info.innerHTML = `
+            <div class="font-medium">${module.name}</div>
+            <div class="text-xs text-text-light">${module.pointsPerMinute}积分/分钟</div>
+          `;
+          
+          const actions = document.createElement('div');
+          actions.className = 'flex gap-2';
+          
+          const editBtn = document.createElement('button');
+          editBtn.className = 'text-primary hover:text-primary/80';
+          editBtn.innerHTML = '<i class="fa fa-pencil"></i>';
+          editBtn.addEventListener('click', () => {
+            this.openEditModuleModal(module.id);
+          });
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'text-reset-red hover:text-red-600';
+          deleteBtn.innerHTML = '<i class="fa fa-trash"></i>';
+          deleteBtn.addEventListener('click', () => {
+            if (confirm(`确定要删除"${module.name}"模块吗？`)) {
+              AppData.deleteFocusModule(module.id);
+              this.renderFocusModules();
+              this.renderModuleList();
+            }
+          });
+          
+          actions.appendChild(editBtn);
+          actions.appendChild(deleteBtn);
+          item.appendChild(info);
+          item.appendChild(actions);
+          container.appendChild(item);
+        });
+      },
+      
+      // 渲染任务列表
+      renderTasks() {
+        const container = document.getElementById('tasks-list');
+        container.innerHTML = '';
+        
+        if (AppData.tasks.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-8 text-text-light">
+              <i class="fa fa-list-ul text-4xl mb-3"></i>
+              <p>暂无任务，添加一个新任务开始吧！</p>
+            </div>
+          `;
+          return;
+        }
+        
+        AppData.tasks.forEach(task => {
+          const taskItem = document.createElement('div');
+          taskItem.className = `task-item bg-neutral rounded-lg p-4 flex items-center justify-between ${task.completed ? 'opacity-70' : ''}`;
+          
+          const taskTypeLabel = task.type === 'habit' 
+            ? (task.isDaily ? '每日习惯' : `习惯任务(${task.habitDays}天)`) 
+            : '普通任务';
+          const taskTypeClass = task.type === 'habit' ? 'bg-accent' : 'bg-secondary';
+          
+          taskItem.innerHTML = `
+            <div class="flex items-center">
+              <input type="checkbox" class="task-checkbox w-5 h-5 mr-3 rounded border-neutral-dark text-primary focus:ring-secondary" ${task.completed ? 'checked' : ''} data-id="${task.id}">
+              <div>
+                <h4 class="font-medium ${task.completed ? 'line-through text-text-light' : ''}">${task.title}</h4>
+                <p class="text-sm text-text-light">奖励: ${task.points}积分</p>
+              </div>
+            </div>
+            <div class="flex items-center">
+              <span class="text-xs ${taskTypeClass} text-white px-2 py-1 rounded-full mr-2">${taskTypeLabel}</span>
+              <button class="delete-task-btn text-text-light hover:text-red-500" data-id="${task.id}">
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+          `;
+          
+          container.appendChild(taskItem);
+          
+          // 添加复选框事件
+          const checkbox = taskItem.querySelector('.task-checkbox');
+          checkbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+              const pointsEarned = AppData.completeTask(task.id);
+              this.updatePointsDisplay();
+              this.showToast('task-complete-toast', `获得 ${pointsEarned} 积分`);
+              this.renderTasks(); // 重新渲染以更新样式
+            }
+          });
+          
+          // 添加删除按钮事件
+          const deleteBtn = taskItem.querySelector('.delete-task-btn');
+          deleteBtn.addEventListener('click', () => {
+            if (confirm(`确定要删除"${task.title}"任务吗？`)) {
+              AppData.deleteTask(task.id);
+              this.renderTasks();
+            }
+          });
+        });
+      },
+      
+      // 渲染心愿列表 -
+      renderWishes() {
+        const container = document.getElementById('wishes-list');
+        container.innerHTML = '';
+        
+        if (AppData.wishes.length === 0) {
+          container.innerHTML = `
+            <div class="text-center py-8 text-text-light">
+              <i class="fa fa-star text-4xl mb-3"></i>
+              <p>暂无心愿，添加一个新心愿开始吧！</p>
+            </div>
+          `;
+          return;
+        }
+        
+        AppData.wishes.forEach(wish => {
+          const wishItem = document.createElement('div');
+          wishItem.className = `wish-item bg-neutral rounded-lg p-4 ${wish.redeemed ? 'opacity-70' : ''}`;
+          
+          wishItem.innerHTML = `
+            <div class="flex justify-between items-start mb-2">
+              <h4 class="font-medium ${wish.redeemed ? 'line-through text-text-light' : ''}">${wish.title}</h4>
+              <div class="flex items-center gap-2">
+                <span class="text-sm bg-accent text-white px-2 py-1 rounded-full">${wish.points}积分</span>
+                <button class="delete-wish-btn text-text-light hover:text-red-500" data-id="${wish.id}">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <p class="text-sm text-text-light mb-3">${wish.description || '无描述'}</p>
+            <button class="redeem-wish-btn bg-primary text-white px-4 py-1 rounded-lg text-sm shadow hover:bg-opacity-90 transition-all-300 ${wish.redeemed ? 'bg-text-light cursor-not-allowed' : ''}" data-id="${wish.id}">
+              ${wish.redeemed ? '已兑换' : '兑换心愿'}
+            </button>
+          `;
+          
+          container.appendChild(wishItem);
+          
+          // 添加兑换按钮事件
+          const redeemBtn = wishItem.querySelector('.redeem-wish-btn');
+          redeemBtn.addEventListener('click', () => {
+            if (wish.redeemed) return;
+            
+            if (AppData.points < wish.points) {
+              alert('积分不足，无法兑换此心愿！');
+              return;
+            }
+            
+            if (confirm(`确定要兑换"${wish.title}"心愿吗？需要消耗${wish.points}积分。`)) {
+              const success = AppData.redeemWish(wish.id);
+              if (success) {
+                this.updatePointsDisplay();
+                this.showToast('wish-redeem-toast', `消耗 ${wish.points} 积分`);
+                this.renderWishes();
+              }
+            }
+          });
+
+          // 心愿删除按钮事件
+          const deleteWishBtn = wishItem.querySelector('.delete-wish-btn');
+          deleteWishBtn.addEventListener('click', () => {
+            if (confirm(`确定要删除"${wish.title}"心愿吗？`)) {
+              AppData.deleteWish(wish.id);
+              this.renderWishes();
+            }
+          });
+        });
+      },
+      
+      // 更新积分显示
+      updatePointsDisplay() {
+        document.getElementById('points-display').textContent = AppData.points;
+      },
+      
+      // 显示提示弹窗
+      showToast(toastId, message) {
+        const toast = document.getElementById(toastId);
+        const messageElement = toast.querySelector('p:last-child');
+        if (messageElement) {
+          messageElement.textContent = message;
+        }
+        
+        // 显示弹窗
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        
+        // 3秒后隐藏
+        setTimeout(() => {
+          toast.classList.remove('translate-y-0', 'opacity-100');
+          toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3000);
+      }
+    };
+    
+    // 初始化应用
+    document.addEventListener('DOMContentLoaded', () => {
+      AppData.init();
+      PomodoroTimer.init();
+      UI.init();
+    });
+  </script>
+</body>
+</html>
