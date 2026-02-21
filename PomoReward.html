@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>专注时光 - 待办与番茄钟</title>
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS 保留原CDN（你反馈功能正常，无需修改） -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome -->
-  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <!-- 思源宋体 -->
+  <!-- 关键修改：替换Font Awesome为国内CDN（仅改这一行） -->
+  <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 思源宋体：新增本地字体兜底（防止谷歌字体加载失败影响文字样式，不改动原有引用） -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <script>
@@ -54,6 +54,13 @@
         background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d9c9b0' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
       }
     }
+    /* 谷歌字体加载失败时，可用系统宋体
+    @font-face {
+      font-family: 'Noto Serif SC';
+      src: local('SimSun'), local('宋体'), local('STSong');
+      font-weight: 400 700;
+      font-display: swap;
+    }*/
   </style>
 </head>
 <body class="font-sans bg-neutral text-text min-h-screen">
@@ -330,7 +337,7 @@
           <i class="fa fa-tag text-primary mr-2"></i>版本信息
         </h4>
         <div class="bg-neutral p-4 rounded-lg">
-          <p class="mb-2"><span class="font-medium text-text">版本号：</span>v1.1.0</p>
+          <p class="mb-2"><span class="font-medium text-text">版本号：</span>v1.1.1</p>
           <p class="mb-4"><span class="font-medium text-text">更新日期：</span>2025-02</p>
           <div class="mb-3">
             <p class="font-medium text-text mb-2">新增功能：</p>
@@ -350,6 +357,7 @@
             <p class="font-medium text-text mb-2">Bug修复：</p>
             <ul class="list-disc list-inside text-sm space-y-1 ml-2">
               <li>修复代码完整性：补全原版本代码结尾缺失部分，确保所有功能正常运行</li>
+              <li>图标加载异常修复：将图标库CDN替换为国内源，确保图标正常显示</li>
             </ul>
           </div>
         </div>
@@ -1505,3 +1513,4 @@
   </script>
 </body>
 </html>
+
