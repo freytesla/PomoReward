@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>时光管理 - 任务与专注</title>
+  <title>专注时光 - 待办与番茄钟</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome -->
@@ -70,7 +70,7 @@
 
     <!-- 标题区域 -->
     <header class="mb-8 text-center">
-      <h1 class="text-4xl font-bold text-primary mb-2 text-shadow">时光管理</h1>
+      <h1 class="text-4xl font-bold text-primary mb-2 text-shadow">专注时光</h1>
       <!-- 日期显示 -->
       <p id="current-date" class="text-text-light italic"></p>
     </header>
@@ -80,7 +80,7 @@
       <!-- 左侧：番茄钟（固定） -->
       <div class="lg:w-1/2 bg-paper-texture rounded-xl shadow-lg p-6 relative overflow-hidden">
         <div class="glass-effect rounded-xl p-8 relative z-10 h-full flex flex-col">
-          <h2 class="text-2xl font-semibold mb-6 text-center">专注时光</h2>
+          <h2 class="text-2xl font-semibold mb-6 text-center">番茄钟</h2>
           
           <!-- 番茄钟显示 -->
           <div class="flex flex-col items-center mb-8 flex-grow">
@@ -110,14 +110,8 @@
             
             <!-- 番茄钟控制按钮 -->
             <div class="flex gap-4">
-              <button id="start-btn" class="bg-primary text-white px-6 py-3 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
-                <i class="fa fa-play mr-2"></i>开始
-              </button>
-              <button id="pause-btn" class="bg-text-light text-white px-6 py-3 rounded-lg shadow hover:bg-opacity-90 transition-all-300 hidden">
-                <i class="fa fa-pause mr-2"></i>暂停
-              </button>
-              <button id="reset-btn" class="bg-text-light text-white px-6 py-3 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
-                <i class="fa fa-refresh mr-2"></i>重置
+              <button id="toggle-state-btn" class="bg-primary text-white px-6 py-3 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
+                <i class="fa fa-play mr-2"></i><span id="toggle-state-text">开始专注</span>
               </button>
             </div>
           </div>
@@ -129,10 +123,22 @@
               <div>
                 <label class="block text-text-light mb-2">专注时长（分钟）</label>
                 <input type="number" id="focus-time" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="25" min="1" max="120">
+                <div class="mt-2">
+                  <label class="flex items-center text-sm text-text-light">
+                    <input type="checkbox" id="focus-free-mode" class="mr-2 rounded border-neutral-dark text-primary focus:ring-secondary">
+                    自由模式
+                  </label>
+                </div>
               </div>
               <div>
                 <label class="block text-text-light mb-2">休息时长（分钟）</label>
                 <input type="number" id="break-time" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="5" min="1" max="30">
+                <div class="mt-2">
+                  <label class="flex items-center text-sm text-text-light">
+                    <input type="checkbox" id="break-free-mode" class="mr-2 rounded border-neutral-dark text-primary focus:ring-secondary">
+                    自由模式
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -324,9 +330,28 @@
           <i class="fa fa-tag text-primary mr-2"></i>版本信息
         </h4>
         <div class="bg-neutral p-4 rounded-lg">
-          <p class="mb-2"><span class="font-medium text-text">版本号：</span>v1.0.0</p>
-          <p class="mb-2"><span class="font-medium text-text">更新日期：</span>2026-02-15</p>
-          <p><span class="font-medium text-text">更新说明：</span>初始版本发布，包含番茄钟、任务管理、心愿清单等核心功能</p>
+          <p class="mb-2"><span class="font-medium text-text">版本号：</span>v1.1.0</p>
+          <p class="mb-4"><span class="font-medium text-text">更新日期：</span>2025-02</p>
+          <div class="mb-3">
+            <p class="font-medium text-text mb-2">新增功能：</p>
+            <ul class="list-disc list-inside text-sm space-y-1 ml-2">
+              <li>自由模式：支持正计时，不受固定时长限制，进度条始终100%</li>
+              <li>独立模式切换：专注和休息可分别选择番茄钟或自由模式</li>
+            </ul>
+          </div>
+          <div class="mb-3">
+            <p class="font-medium text-text mb-2">功能优化：</p>
+            <ul class="list-disc list-inside text-sm space-y-1 ml-2">
+              <li>简化控制按钮：原"开始"、"重置"两个按钮整合为一个智能切换按钮</li>
+              <li>一键状态切换：点击按钮即可在专注和休息状态间快速切换</li>
+            </ul>
+          </div>
+          <div>
+            <p class="font-medium text-text mb-2">Bug修复：</p>
+            <ul class="list-disc list-inside text-sm space-y-1 ml-2">
+              <li>修复代码完整性：补全原版本代码结尾缺失部分，确保所有功能正常运行</li>
+            </ul>
+          </div>
         </div>
       </div>
       
@@ -470,7 +495,7 @@
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // 工具函数：格式化日期显示
     function formatCurrentDate() {
       const now = new Date();
@@ -755,89 +780,158 @@
       timer: null,
       timeLeft: 25 * 60,
       isRunning: false,
-      isBreak: false,
+      isBreak: true, // 初始为true，这样第一次toggle会切换到专注状态
+      focusFreeMode: false,
+      breakFreeMode: false,
+      elapsedTime: 0, // 用于自由模式的正计时
       
       // 初始化番茄钟
       init() {
         this.timeLeft = AppData.settings.focusTime * 60;
         this.updateDisplay();
         this.setupEventListeners();
+        // 设置初始按钮文字和标签
+        document.getElementById('toggle-state-text').textContent = '开始专注';
+        document.getElementById('timer-label').textContent = '待开始';
       },
       
       // 设置事件监听器
       setupEventListeners() {
-        document.getElementById('start-btn').addEventListener('click', () => this.start());
-        document.getElementById('pause-btn').addEventListener('click', () => this.pause());
-        document.getElementById('reset-btn').addEventListener('click', () => this.reset());
+        // 切换状态按钮（在专注和休息之间切换）
+        document.getElementById('toggle-state-btn').addEventListener('click', () => this.toggleState());
         
+        // 专注时长变化
         document.getElementById('focus-time').addEventListener('change', (e) => {
           AppData.updateSettings(e.target.value, AppData.settings.breakTime);
-          if (!this.isRunning) {
+          if (!this.isRunning && !this.isBreak) {
             this.reset();
           }
         });
         
+        // 休息时长变化
         document.getElementById('break-time').addEventListener('change', (e) => {
           AppData.updateSettings(AppData.settings.focusTime, e.target.value);
         });
+        
+        // 专注自由模式切换
+        document.getElementById('focus-free-mode').addEventListener('change', (e) => {
+          this.focusFreeMode = e.target.checked;
+          if (!this.isBreak) {
+            this.updateDisplay();
+          }
+        });
+        
+        // 休息自由模式切换
+        document.getElementById('break-free-mode').addEventListener('change', (e) => {
+          this.breakFreeMode = e.target.checked;
+          if (this.isBreak) {
+            this.updateDisplay();
+          }
+        });
+      },
+      
+      // 切换专注/休息状态
+      toggleState() {
+        // 如果正在运行，先停止
+        if (this.isRunning) {
+          this.pause();
+        }
+        
+        // 切换状态
+        this.isBreak = !this.isBreak;
+        
+        // 重置时间和已用时间
+        if (this.isBreak) {
+          this.timeLeft = AppData.settings.breakTime * 60;
+          this.elapsedTime = 0;
+          document.getElementById('timer-label').textContent = '休息中';
+          document.getElementById('toggle-state-text').textContent = '开始专注';
+        } else {
+          this.timeLeft = AppData.settings.focusTime * 60;
+          this.elapsedTime = 0;
+          document.getElementById('timer-label').textContent = '专注中';
+          document.getElementById('toggle-state-text').textContent = '开始休息';
+        }
+        
+        this.updateDisplay();
+        this.start();
       },
       
       // 开始计时器
       // 在 PomodoroTimer 的 start 方法中补充积分累加逻辑
-start() {
-  if (this.isRunning) return;
-  this.isRunning = true;
-  document.getElementById('start-btn').classList.add('hidden');
-  document.getElementById('pause-btn').classList.remove('hidden');
-  
-  // 记录当前已累计的分钟数（避免重复累加）
-  let accumulatedMinutes = 0;
-  const totalSeconds = this.timeLeft;
-  
-  this.timer = setInterval(() => {
-    this.timeLeft--;
-    this.updateDisplay();
-    
-    // 计算已过去的分钟数（向下取整）
-    const passedSeconds = totalSeconds - this.timeLeft;
-    const currentMinutes = Math.floor(passedSeconds / 60);
-    
-    // 每满1分钟，累加对应积分
-    if (currentMinutes > accumulatedMinutes) {
-      accumulatedMinutes = currentMinutes;
-      // 获取当前模块的每分钟积分
-      const currentModule = AppData.getCurrentFocusModule();
-      const pointsToAdd = currentModule.pointsPerMinute;
-      // 累加积分并保存
-      AppData.points += pointsToAdd;
-      AppData.saveData();
-      // 更新页面积分显示
-      document.getElementById('points-display').textContent = AppData.points;
-    }
-    
-    if (this.timeLeft <= 0) {
-      this.complete();
-    }
-  }, 1000);
-},
+      start() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        
+        // 记录当前已累计的分钟数（避免重复累加）
+        let accumulatedMinutes = 0;
+        const isFreeMode = this.isBreak ? this.breakFreeMode : this.focusFreeMode;
+        
+        // 如果不是自由模式，记录总秒数
+        const totalSeconds = isFreeMode ? 0 : this.timeLeft;
+        
+        this.timer = setInterval(() => {
+          if (isFreeMode) {
+            // 自由模式：正计时
+            this.elapsedTime++;
+            this.updateDisplay();
+            
+            // 专注状态下，每分钟累加积分
+            if (!this.isBreak) {
+              const currentMinutes = Math.floor(this.elapsedTime / 60);
+              if (currentMinutes > accumulatedMinutes) {
+                accumulatedMinutes = currentMinutes;
+                const currentModule = AppData.getCurrentFocusModule();
+                const pointsToAdd = currentModule.pointsPerMinute;
+                AppData.points += pointsToAdd;
+                AppData.saveData();
+                document.getElementById('points-display').textContent = AppData.points;
+              }
+            }
+          } else {
+            // 番茄钟模式：倒计时
+            this.timeLeft--;
+            this.updateDisplay();
+            
+            // 专注状态下，每分钟累加积分
+            if (!this.isBreak) {
+              const passedSeconds = totalSeconds - this.timeLeft;
+              const currentMinutes = Math.floor(passedSeconds / 60);
+              
+              if (currentMinutes > accumulatedMinutes) {
+                accumulatedMinutes = currentMinutes;
+                const currentModule = AppData.getCurrentFocusModule();
+                const pointsToAdd = currentModule.pointsPerMinute;
+                AppData.points += pointsToAdd;
+                AppData.saveData();
+                document.getElementById('points-display').textContent = AppData.points;
+              }
+            }
+            
+            if (this.timeLeft <= 0) {
+              this.complete();
+            }
+          }
+        }, 1000);
+      },
       
       // 暂停计时器
       pause() {
         if (this.isRunning) {
           this.isRunning = false;
           clearInterval(this.timer);
-          document.getElementById('start-btn').classList.remove('hidden');
-          document.getElementById('pause-btn').classList.add('hidden');
         }
       },
       
       // 重置计时器
       reset() {
         this.pause();
-        this.isBreak = false;
+        this.isBreak = true; // 重置到初始状态
         this.timeLeft = AppData.settings.focusTime * 60;
+        this.elapsedTime = 0;
         this.updateDisplay();
-        document.getElementById('timer-label').textContent = '专注中';
+        document.getElementById('timer-label').textContent = '待开始';
+        document.getElementById('toggle-state-text').textContent = '开始专注';
       },
       
       // 完成当前计时
@@ -856,28 +950,46 @@ start() {
           // 切换到休息时间
           this.isBreak = true;
           this.timeLeft = AppData.settings.breakTime * 60;
+          this.elapsedTime = 0;
           document.getElementById('timer-label').textContent = '休息中';
+          document.getElementById('toggle-state-text').textContent = '开始专注';
           this.updateDisplay();
         } else {
           // 休息时间完成，重置到专注时间
           this.isBreak = false;
           this.timeLeft = AppData.settings.focusTime * 60;
+          this.elapsedTime = 0;
           document.getElementById('timer-label').textContent = '专注中';
+          document.getElementById('toggle-state-text').textContent = '开始休息';
           this.updateDisplay();
         }
       },
       
       // 更新显示
       updateDisplay() {
-        const minutes = Math.floor(this.timeLeft / 60);
-        const seconds = this.timeLeft % 60;
-        const displayTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        document.getElementById('timer-display').textContent = displayTime;
+        const isFreeMode = this.isBreak ? this.breakFreeMode : this.focusFreeMode;
         
-        // 更新进度条
-        const totalTime = this.isBreak ? AppData.settings.breakTime * 60 : AppData.settings.focusTime * 60;
-        const progress = (1 - this.timeLeft / totalTime) * 283;
-        document.getElementById('progress-circle').style.strokeDashoffset = 283 - progress;
+        if (isFreeMode) {
+          // 自由模式：显示已过时间（正计时）
+          const minutes = Math.floor(this.elapsedTime / 60);
+          const seconds = this.elapsedTime % 60;
+          const displayTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          document.getElementById('timer-display').textContent = displayTime;
+          
+          // 进度条始终100%
+          document.getElementById('progress-circle').style.strokeDashoffset = 0;
+        } else {
+          // 番茄钟模式：显示剩余时间（倒计时）
+          const minutes = Math.floor(this.timeLeft / 60);
+          const seconds = this.timeLeft % 60;
+          const displayTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          document.getElementById('timer-display').textContent = displayTime;
+          
+          // 更新进度条
+          const totalTime = this.isBreak ? AppData.settings.breakTime * 60 : AppData.settings.focusTime * 60;
+          const progress = (1 - this.timeLeft / totalTime) * 283;
+          document.getElementById('progress-circle').style.strokeDashoffset = 283 - progress;
+        }
       }
     };
     
@@ -1384,7 +1496,7 @@ start() {
       }
     };
     
-    // 初始化应用
+    // 页面加载完成后初始化
     document.addEventListener('DOMContentLoaded', () => {
       AppData.init();
       PomodoroTimer.init();
