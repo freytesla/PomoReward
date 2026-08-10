@@ -3,278 +3,347 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PomoReward - 待办与番茄钟</title>
-  <!-- Tailwind CSS 保留原CDN） -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- 替换Font Awesome为国内CDN） -->
+  <title>PomoReward — 专注台</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23018D87'/><circle cx='8' cy='8' r='4.2' fill='none' stroke='%23FFFFFF' stroke-width='1.6'/><path d='M8 5.4v3.2l2.2 1.3' stroke='%23FFFFFF' stroke-width='1.4' fill='none' stroke-linecap='round'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Space+Grotesk:wght@300;400;500&family=Space+Mono&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <!-- 思源宋体：新增本地字体兜底（防止谷歌字体加载失败影响文字样式，不改动原有引用） -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            primary: '#2C5F2D',
-            secondary: '#97A97C',
-            accent: '#FF9F1C',
-            neutral: '#F5F2EA',
-            'neutral-dark': '#E5E1D8',
-            text: '#3D2B1F',
-            'text-light': '#6B5B47',
-            'reset-red': '#8B0000' 
+            primary: '#01847F',
+            secondary: '#1BA6A0',
+            accent: '#01847F',
+            neutral: '#F4F4F2',
+            'neutral-dark': '#E3E5DE',
+            text: '#0A0D0C',
+            'text-light': '#5F6A66',
+            'reset-red': '#015A56'
           },
           fontFamily: {
-            sans: ['Noto Serif SC', 'serif'],
+            sans: ['Space Grotesk', 'Noto Sans SC', 'sans-serif'],
+            display: ['Syne', 'Noto Sans SC', 'sans-serif'],
+            mono: ['Space Mono', 'Noto Sans SC', 'monospace']
           }
         }
       }
     }
   </script>
-  
-  <style type="text/tailwindcss">
-    @layer utilities {
-      .content-auto {
-        content-visibility: auto;
-      }
-      .text-shadow {
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-      }
-      .transition-all-300 {
-        transition: all 0.3s ease;
-      }
-      .glass-effect {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-      }
-      .paper-texture {
-        background-color: #F5F2EA;
-        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d9c9b0' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
-      }
+  <style>
+    /* ============ FREY VISUAL STYLE — POMOREWARD 专注台 ============ */
+    :root{
+      --green:      #01847F; --green-600:#016E6A; --green-700:#015A56;
+      --green-400:  #1BA6A0; --green-200:#8FD6D0; --green-100:#D9EFED;
+      --ink:#0A0D0C; --bg:#050706; --paper:#FFFFFF; --paper-2:#F4F4F2;
+      --line:rgba(10,13,12,.12); --line-strong:rgba(10,13,12,.28); --muted:rgba(10,13,12,.58);
+      --font-display:'Syne','Noto Sans SC',sans-serif;
+      --font-body:'Space Grotesk','Noto Sans SC',sans-serif;
+      --font-mono:'Space Mono','Noto Sans SC',monospace;
+      --ease:cubic-bezier(.22,.61,.21,1); --ease-out:cubic-bezier(.16,1,.3,1);
     }
-    /* 谷歌字体加载失败时，可用系统宋体
-    @font-face {
-      font-family: 'Noto Serif SC';
-      src: local('SimSun'), local('宋体'), local('STSong');
-      font-weight: 400 700;
-      font-display: swap;
-    }*/
+    html{ -webkit-text-size-adjust:100%; }
+    body{
+      font-family:var(--font-body); background:var(--paper); color:var(--ink);
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    }
+    ::selection{ background:var(--green); color:var(--paper); }
+    h1,h2,h3,h4,h5{ font-family:var(--font-display); font-weight:800; letter-spacing:-.02em; line-height:.98; }
+    input,select,textarea{ font-family:var(--font-body); }
+    .shadow,.shadow-md,.shadow-lg{ box-shadow:none !important; }
+    .rounded-lg,.rounded-xl{ border-radius:12px !important; }
+    .bg-white{ background:var(--paper) !important; }
+    .text-red-500,.text-red-600,.text-red-700{ color:var(--green-700) !important; }
+    .bg-red-500,.bg-red-600{ background-color:var(--green-700) !important; }
+    .hover\:text-red-500:hover,.hover\:text-red-600:hover{ color:var(--green-700) !important; }
+    .text-amber-500{ color:var(--green-400) !important; }
+    ::-webkit-scrollbar{ width:10px; height:10px; }
+    ::-webkit-scrollbar-track{ background:var(--bg); }
+    ::-webkit-scrollbar-thumb{ background:var(--green-700); border-radius:99px; border:2px solid var(--bg); }
+    ::-webkit-scrollbar-thumb:hover{ background:var(--green); }
+    @media (pointer:fine){ body.has-cursor, body.has-cursor button, body.has-cursor input, body.has-cursor textarea, body.has-cursor select, body.has-cursor a{ cursor:none; } }
+    #cur-dot,#cur-ring{ position:fixed; top:0; left:0; z-index:9999; pointer-events:none; border-radius:50%; will-change:transform; }
+    #cur-dot{ width:8px; height:8px; margin:-4px 0 0 -4px; background:var(--green); }
+    #cur-ring{ width:38px; height:38px; margin:-19px 0 0 -19px; border:1px solid rgba(245,246,241,.9); mix-blend-mode:difference; opacity:.9; transition:width .25s var(--ease), height .25s var(--ease), margin .25s var(--ease), opacity .25s; }
+    #cur-ring.is-hover{ width:64px; height:64px; margin:-32px 0 0 -32px; opacity:.5; }
+    #cur-ring.is-down{ width:24px; height:24px; margin:-12px 0 0 -12px; }
+    @media (pointer:coarse){ #cur-dot,#cur-ring{ display:none; } }
+    #loader{
+      position:fixed; inset:0; z-index:10000; background:var(--bg); color:var(--paper);
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:30px;
+      clip-path:inset(0 0 0 0); transition:clip-path .9s var(--ease-out);
+    }
+    #loader.done{ clip-path:inset(0 0 100% 0); pointer-events:none; }
+    .loader__rope{ position:relative; width:1px; height:60px; background:rgba(245,246,241,.16); transform-origin:top; animation:rope-grow .9s var(--ease-out) both; }
+    .loader__pendant{
+      position:absolute; left:50%; top:60px; margin-left:-8px; width:16px; height:16px; background:var(--green);
+      clip-path:polygon(50% 0,100% 38%,50% 100%,0 38%);
+      animation:pendant-drop 1.4s cubic-bezier(.3,1.25,.4,1) .2s both; box-shadow:0 0 26px rgba(1,132,127,.75);
+    }
+    .loader__pendant::after{ content:''; position:absolute; inset:3px; background:var(--bg); clip-path:polygon(50% 0,100% 38%,50% 100%,0 38%); }
+    @keyframes rope-grow{ from{ transform:scaleY(0);} to{ transform:scaleY(1);} }
+    @keyframes pendant-drop{ from{ transform:translateY(-46px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
+    .loader__word{ display:flex; gap:.06em; overflow:hidden; font-family:var(--font-display); font-size:clamp(46px,10vw,110px); font-weight:800; letter-spacing:-.02em; line-height:1; }
+    .loader__word span{ display:inline-block; transform:translateY(120%); animation:loader-in .7s var(--ease-out) forwards; }
+    .loader__word span:nth-child(1){ animation-delay:.18s; } .loader__word span:nth-child(2){ animation-delay:.25s; }
+    .loader__word span:nth-child(3){ animation-delay:.32s; } .loader__word span:nth-child(4){ animation-delay:.39s; }
+    .loader__word span:nth-child(5){ animation-delay:.46s; }
+    .loader__gem{ color:var(--green); }
+    @keyframes loader-in{ to{ transform:translateY(0); } }
+    .loader__meta{ width:min(340px,72vw); display:flex; align-items:center; gap:14px; font-family:var(--font-mono); font-size:10px; letter-spacing:.32em; color:rgba(245,246,241,.58); }
+    .loader__label{ white-space:nowrap; text-transform:uppercase; }
+    .loader__bar{ position:relative; flex:1; height:1px; background:rgba(245,246,241,.18); overflow:hidden; }
+    .loader__bar i{ position:absolute; inset:0; background:var(--green); transform-origin:left; transform:scaleX(0); }
+    .loader__pct{ min-width:40px; text-align:right; letter-spacing:.18em; }
+    [data-reveal]{ opacity:0; transform:translateY(26px); transition:opacity .8s var(--ease-out), transform .8s var(--ease-out); transition-delay:var(--d,0s); will-change:transform; }
+    [data-reveal].is-in{ opacity:1; transform:none; }
+        .f-display{ font-family:var(--font-display); font-weight:800; font-size:clamp(44px,7vw,84px); letter-spacing:-.03em; line-height:.95; color:var(--ink); }
+    .f-display i{ font-style:normal; color:var(--green); }
+    .f-mono-sub{ font-family:var(--font-mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--muted); }
+    .f-card{ background:var(--paper); border:1px solid var(--line); border-radius:16px; }
+    .f-sec-head{ display:flex; align-items:center; gap:14px; padding-bottom:14px; border-bottom:1px solid var(--line); margin-bottom:18px; }
+    .f-sec-head h2{ font-size:clamp(22px,2.6vw,30px); }
+        .f-label{ font-size:12px; color:var(--muted); }
+    .f-input, input[type=text], input[type=number], select, textarea{
+      background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px 14px;
+      font-size:14px; color:var(--ink); outline:none; transition:border-color .25s var(--ease);
+    }
+    .f-input:focus, input:focus, select:focus, textarea:focus{ border-color:var(--green) !important; }
+    input[type=checkbox]{ accent-color:var(--green); width:18px; height:18px; }
+    .f-btn{
+      position:relative; display:inline-flex; align-items:center; gap:10px; overflow:hidden;
+      padding:12px 24px; border-radius:99px;
+      font-family:var(--font-mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+      border:1px solid var(--line-strong); color:var(--ink); background:transparent;
+      transition:color .35s var(--ease), border-color .35s;
+    }
+    .f-btn .arr{ transition:transform .35s var(--ease); }
+    .f-btn::before{ content:''; position:absolute; inset:0; background:var(--green); transform:scaleY(0); transform-origin:bottom; transition:transform .4s var(--ease); }
+    .f-btn:hover{ color:var(--paper); border-color:var(--green); }
+    .f-btn:hover::before{ transform:scaleY(1); }
+    .f-btn:hover .arr{ transform:translateX(5px); }
+    .f-btn > *{ position:relative; z-index:1; }
+    .f-btn--solid{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+    .f-btn--solid:hover{ color:var(--paper); }
+    .f-btn--green{ background:var(--green); color:var(--paper); border-color:var(--green); }
+    .f-btn--green:hover{ color:var(--paper); }
+    .f-btn--ghost{ background:transparent; }
+    .f-btn--danger{ color:var(--green-700); border-color:transparent; }
+    .f-btn--danger:hover{ color:var(--paper); border-color:var(--green-700); }
+    .f-btn--danger::before{ background:var(--green-700); }
+    button.bg-primary, button.bg-accent, button.bg-neutral-dark, .redeem-wish-btn{
+      font-family:var(--font-mono) !important; letter-spacing:.16em; text-transform:uppercase;
+      transition:transform .25s var(--ease), opacity .25s, background-color .3s, color .3s, border-color .3s;
+    }
+    button.bg-primary{ border:1px solid var(--green); }
+    button.bg-neutral-dark{ border:1px solid var(--line); }
+    button.bg-accent{ border:1px solid var(--green-400); }
+    .task-item,.wish-item{ border:1px solid var(--line); transition:border-color .3s var(--ease), transform .3s var(--ease); }
+    .task-item:hover,.wish-item:hover{ border-color:var(--green); transform:translateY(-2px); }
+    .delete-task-btn,.delete-wish-btn{ color:var(--muted) !important; }
+    .delete-task-btn:hover,.delete-wish-btn:hover{ color:var(--green-700) !important; }
+    .fixed.inset-0.bg-black{ background:rgba(5,7,6,.55) !important; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+    .modal-box{
+      background:var(--paper) !important; border:1px solid var(--line-strong); border-radius:16px;
+      animation:modal-in .45s var(--ease-out) both;
+    }
+    @keyframes modal-in{ from{ opacity:0; transform:translateY(22px) scale(.98);} to{ opacity:1; transform:none;} }
+        .modal-title{ font-size:clamp(22px,2.6vw,28px); }
+    .modal-close{ color:var(--muted); transition:color .25s, transform .25s var(--ease); }
+    .modal-close:hover{ color:var(--ink); transform:rotate(90deg); }
+    .toast-frey{
+      background:var(--bg) !important; color:var(--paper) !important;
+      border:1px solid rgba(245,246,241,.16); border-left:3px solid var(--green) !important;
+      border-radius:12px; box-shadow:none !important;
+    }
+    .toast-frey p:last-child{ font-family:var(--font-mono); font-size:12px; letter-spacing:.12em; color:rgba(245,246,241,.7); }
+    .toast-frey i{ color:var(--green); }
+    .f-foot{
+      margin-top:44px; padding-top:16px; border-top:1px solid var(--line);
+      display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between;
+      font-family:var(--font-mono); font-size:10px; letter-spacing:.26em; text-transform:uppercase; color:var(--muted);
+    }
+    .f-foot b{ color:var(--green); font-weight:400; }
+    @media (prefers-reduced-motion:reduce){
+      *,*::before,*::after{ animation-duration:.001s !important; transition-duration:.001s !important; }
+      [data-reveal]{ opacity:1 !important; transform:none !important; }
+      #loader{ display:none; }
+      #cur-dot,#cur-ring{ display:none; }
+    }
   </style>
 </head>
-<body class="font-sans bg-neutral text-text min-h-screen">
-  <div class="container mx-auto px-4 py-8 relative">
-    <!-- 左上角说明按钮 -->
-    <button id="info-btn" class="absolute top-4 left-4 bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300 text-sm flex items-center">
+<body class="font-sans text-text min-h-screen">
+  <div id="cur-dot"></div><div id="cur-ring"></div>
+  <div id="loader" aria-hidden="true">
+    <div class="loader__scene">
+      <div class="loader__rope"><div class="loader__pendant"></div></div>
+      <div class="loader__word"><span>P</span><span>O</span><span>M</span><span>O</span><span class="loader__gem">.</span></div>
+    </div>
+    <div class="loader__meta"><span class="loader__label">loading</span><span class="loader__bar"><i id="loadbar"></i></span><span class="loader__pct" id="loadpct">0%</span></div>
+  </div>
+
+  <div class="container mx-auto px-4 py-10 relative max-w-6xl">
+    <button id="info-btn" class="f-btn f-btn--ghost absolute top-5 left-5 text-sm flex items-center z-20">
       <i class="fa fa-info-circle mr-2"></i>说明
     </button>
-    
-    <!-- 全局重置按钮 -->
-    <button id="global-reset-btn" class="absolute top-4 right-4 text-reset-red hover:text-red-700 transition-all-300 text-sm">
+    <button id="global-reset-btn" class="f-btn f-btn--danger absolute top-5 right-5 text-sm z-20">
       重置
     </button>
 
-    <!-- 标题区域 -->
-    <header class="mb-8 text-center">
-      <h1 class="text-4xl font-bold text-primary mb-2 text-shadow">专注台</h1>
-      <!-- 日期显示 -->
-      <p id="current-date" class="text-text-light italic"></p>
+    <header class="mb-10 text-center pt-14" data-reveal>
+      <h1 class="f-display">专注台<i>.</i></h1>
+      <p id="current-date" class="f-mono-sub mt-4"></p>
     </header>
 
-    <!-- 主内容区域 - 固定左右排布（PC）/上下（移动端） -->
     <div class="flex flex-col lg:flex-row gap-8">
-      <!-- 左侧：番茄钟（固定） -->
-      <div class="lg:w-1/2 bg-paper-texture rounded-xl shadow-lg p-6 relative overflow-hidden">
-        <div class="glass-effect rounded-xl p-8 relative z-10 h-full flex flex-col">
-          <h2 class="text-2xl font-semibold mb-6 text-center">番茄钟</h2>
-          
-          <!-- 番茄钟显示 -->
-          <div class="flex flex-col items-center mb-8 flex-grow">
-            <div class="w-64 h-64 rounded-full bg-white shadow-md flex items-center justify-center mb-4 relative">
-              <svg class="w-full h-full" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="#E5E1D8" stroke-width="8" />
-                <circle id="progress-circle" cx="50" cy="50" r="45" fill="none" stroke="#2C5F2D" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="0" transform="rotate(-90 50 50)" />
-              </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span id="timer-display" class="text-5xl font-bold text-text">25:00</span>
-                <span id="timer-label" class="text-lg text-text-light mt-2">专注中</span>
-              </div>
-            </div>
-            
-            <!-- 专注模块选择 + 管理 -->
-            <div class="mb-6 w-full max-w-md">
-              <div class="flex justify-between items-center mb-2">
-                <label class="block text-text-light">专注模块</label>
-                <button id="manage-modules-btn" class="text-sm text-primary hover:underline">
-                  <i class="fa fa-cog mr-1"></i>管理模块
-                </button>
-              </div>
-              <div class="flex flex-wrap gap-2" id="focus-modules">
-                <!-- 模块按钮动态生成 -->
-              </div>
-            </div>
-            
-            <!-- 番茄钟控制按钮 -->
-            <div class="flex gap-4">
-              <button id="toggle-state-btn" class="bg-primary text-white px-6 py-3 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
-                <i class="fa fa-play mr-2"></i><span id="toggle-state-text">开始专注</span>
-              </button>
+      <!-- 左侧：番茄钟 -->
+      <div class="lg:w-1/2 f-card p-6 relative overflow-hidden" data-reveal style="--d:.08s">
+        <div class="f-sec-head">
+          <h2>番茄钟</h2>
+        </div>
+
+        <div class="flex flex-col items-center mb-8">
+          <div class="w-64 h-64 rounded-full bg-white border border-neutral-dark flex items-center justify-center mb-5 relative">
+            <svg class="w-full h-full" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="45" fill="none" stroke="#E3E5DE" stroke-width="5" />
+              <circle id="progress-circle" cx="50" cy="50" r="45" fill="none" stroke="#01847F" stroke-width="5" stroke-linecap="round" stroke-dasharray="283" stroke-dashoffset="0" transform="rotate(-90 50 50)" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="timer-display" class="font-extrabold text-text" style="font-family:var(--font-display); font-size:44px; letter-spacing:-.02em;">25:00</span>
+              <span id="timer-label" class="f-mono-sub mt-2">专注中</span>
             </div>
           </div>
-          
-          <!-- 番茄钟设置 -->
-          <div class="border-t border-neutral-dark pt-6 mt-auto">
-            <h3 class="text-xl font-semibold mb-4">设置</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-text-light mb-2">专注时长（分钟）</label>
-                <input type="number" id="focus-time" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="25" min="1" max="120">
-                <div class="mt-2">
-                  <label class="flex items-center text-sm text-text-light">
-                    <input type="checkbox" id="focus-free-mode" class="mr-2 rounded border-neutral-dark text-primary focus:ring-secondary">
-                    自由模式
-                  </label>
-                </div>
+
+          <div class="mb-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-3">
+              <label class="f-label">专注模块</label>
+              <button id="manage-modules-btn" class="f-mono-sub text-primary" style="border:none; background:none; padding:0;">
+                <i class="fa fa-cog mr-1"></i>管理模块
+              </button>
+            </div>
+            <div class="flex flex-wrap gap-2" id="focus-modules">
+            </div>
+          </div>
+
+          <div class="flex gap-4">
+            <button id="toggle-state-btn" class="f-btn f-btn--green px-8 py-3">
+              <i class="fa fa-play mr-2"></i><span id="toggle-state-text">开始专注</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="border-t border-neutral-dark pt-6 mt-auto">
+          <h3 class="text-lg font-semibold mb-4">设置</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="f-label block mb-2">专注时长（分钟）</label>
+              <input type="number" id="focus-time" class="w-full" value="25" min="1" max="120">
+              <div class="mt-2">
+                <label class="flex items-center text-sm text-text-light">
+                  <input type="checkbox" id="focus-free-mode" class="mr-2 rounded border-neutral-dark text-primary focus:ring-secondary">
+                  自由模式
+                </label>
               </div>
-              <div>
-                <label class="block text-text-light mb-2">休息时长（分钟）</label>
-                <input type="number" id="break-time" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="5" min="1" max="30">
-                <div class="mt-2">
-                  <label class="flex items-center text-sm text-text-light">
-                    <input type="checkbox" id="break-free-mode" class="mr-2 rounded border-neutral-dark text-primary focus:ring-secondary">
-                    自由模式
-                  </label>
-                </div>
+            </div>
+            <div>
+              <label class="f-label block mb-2">休息时长（分钟）</label>
+              <input type="number" id="break-time" class="w-full" value="5" min="1" max="30">
+              <div class="mt-2">
+                <label class="flex items-center text-sm text-text-light">
+                  <input type="checkbox" id="break-free-mode" class="mr-2 rounded border-neutral-dark text-primary focus:ring-secondary">
+                  自由模式
+                </label>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
-      <!-- 右侧：任务和心愿（固定） -->
-      <div class="lg:w-1/2">
-        <!-- 积分显示 -->
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-semibold">我的积分</h2>
-            <div class="flex items-center">
+      <!-- 右侧：任务和心愿 -->
+      <div class="lg:w-1/2" data-reveal style="--d:.16s">
+        <div class="f-card p-6 mb-6">
+          <div class="f-sec-head">
+            <h2>我的积分</h2>
+            <div class="flex items-center ml-auto">
               <i class="fa fa-star text-accent text-2xl mr-2"></i>
-              <span id="points-display" class="text-3xl font-bold text-primary">0</span>
+              <span id="points-display" class="font-bold text-primary" style="font-family:var(--font-display); font-size:34px;">0</span>
             </div>
           </div>
         </div>
-        
-        <!-- 选项卡切换 -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+
+        <div class="f-card overflow-hidden">
           <div class="flex border-b border-neutral-dark">
-            <button id="tasks-tab" class="flex-1 py-4 text-center font-medium text-primary border-b-2 border-primary">任务清单</button>
-            <button id="wishes-tab" class="flex-1 py-4 text-center font-medium text-text-light">心愿单</button>
+            <button id="tasks-tab" class="flex-1 py-4 text-center f-mono-sub text-primary border-b-2 border-primary" style="font-size:12px;">任务清单</button>
+            <button id="wishes-tab" class="flex-1 py-4 text-center f-mono-sub text-text-light" style="font-size:12px;">心愿单</button>
           </div>
-          
-          <!-- 任务清单内容 -->
+
           <div id="tasks-content" class="p-6">
-            <!-- 任务列表 -->
             <h3 class="text-xl font-semibold mb-4">任务列表</h3>
             <div id="tasks-list" class="space-y-3 mb-6">
-              <!-- 任务项动态添加 -->
-              <div class="task-item bg-neutral rounded-lg p-4 flex items-center justify-between">
-                <div class="flex items-center">
-                  <input type="checkbox" class="task-checkbox w-5 h-5 mr-3 rounded border-neutral-dark text-primary focus:ring-secondary">
-                  <div>
-                    <h4 class="font-medium">完成示例任务</h4>
-                    <p class="text-sm text-text-light">奖励: 10积分</p>
-                  </div>
-                </div>
-                <div class="flex items-center">
-                  <span class="text-xs bg-secondary text-white px-2 py-1 rounded-full mr-2">普通任务</span>
-                  <button class="delete-task-btn text-text-light hover:text-red-500">
-                    <i class="fa fa-trash"></i>
-                  </button>
-                </div>
-              </div>
             </div>
-            
-            <!-- 添加任务表单 -->
-            <div class="bg-neutral rounded-lg p-4">
-              <h3 class="text-xl font-semibold mb-4">添加新任务</h3>
+
+            <div class="bg-neutral rounded-lg p-5">
+              <h3 class="text-lg font-semibold mb-4">添加新任务</h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div class="md:col-span-2">
-                  <label class="block text-text-light mb-2">任务名称</label>
-                  <input type="text" id="task-title" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="输入任务名称">
+                  <label class="f-label block mb-2">任务名称</label>
+                  <input type="text" id="task-title" class="w-full" placeholder="输入任务名称">
                 </div>
                 <div>
-                  <label class="block text-text-light mb-2">积分奖励</label>
-                  <input type="number" id="task-points" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="10" min="1" max="100">
+                  <label class="f-label block mb-2">积分奖励</label>
+                  <input type="number" id="task-points" class="w-full" value="10" min="1" max="100">
                 </div>
                 <div>
-                  <label class="block text-text-light mb-2">任务类型</label>
-                  <select id="task-type" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary">
+                  <label class="f-label block mb-2">任务类型</label>
+                  <select id="task-type" class="w-full">
                     <option value="normal">普通任务</option>
                     <option value="habit">习惯任务</option>
                   </select>
                 </div>
                 <div id="habit-options-container" class="hidden md:col-span-2">
-                  <label class="block text-text-light mb-2">习惯任务设置</label>
+                  <label class="f-label block mb-2">习惯任务设置</label>
                   <div class="flex items-center gap-4">
                     <div class="flex items-center">
                       <input type="checkbox" id="habit-is-daily" class="w-5 h-5 mr-2 rounded border-neutral-dark text-primary focus:ring-secondary">
-                      <label for="habit-is-daily">每天重复（永久）</label>
+                      <label for="habit-is-daily" class="text-sm">每天重复（永久）</label>
                     </div>
                     <div id="habit-days-container" class="flex-1">
-                      <label class="block text-text-light mb-2">持续天数（非永久时生效）</label>
-                      <input type="number" id="habit-days" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="7" min="1" max="365">
+                      <label class="f-label block mb-2">持续天数（非永久时生效）</label>
+                      <input type="number" id="habit-days" class="w-full" value="7" min="1" max="365">
                     </div>
                   </div>
                 </div>
               </div>
-              <button id="add-task-btn" class="bg-primary text-white px-6 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
+              <button id="add-task-btn" class="f-btn f-btn--solid">
                 <i class="fa fa-plus mr-2"></i>添加任务
               </button>
             </div>
           </div>
-          
-          <!-- 心愿单内容 -->
+
           <div id="wishes-content" class="p-6 hidden">
-            <!-- 心愿列表 -->
             <h3 class="text-xl font-semibold mb-4">心愿列表</h3>
             <div id="wishes-list" class="space-y-3 mb-6">
-              <!-- 心愿项动态添加 -->
-              <div class="wish-item bg-neutral rounded-lg p-4">
-                <div class="flex justify-between items-start mb-2">
-                  <h4 class="font-medium">购买新书</h4>
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm bg-accent text-white px-2 py-1 rounded-full">50积分</span>
-                    <button class="delete-wish-btn text-text-light hover:text-red-500" data-id="demo">
-                      <i class="fa fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-                <p class="text-sm text-text-light mb-3">一本关于时间管理的书籍</p>
-                <button class="redeem-wish-btn bg-primary text-white px-4 py-1 rounded-lg text-sm shadow hover:bg-opacity-90 transition-all-300">
-                  兑换心愿
-                </button>
-              </div>
             </div>
-            
-            <!-- 添加心愿表单 -->
-            <div class="bg-neutral rounded-lg p-4">
-              <h3 class="text-xl font-semibold mb-4">添加新心愿</h3>
+
+            <div class="bg-neutral rounded-lg p-5">
+              <h3 class="text-lg font-semibold mb-4">添加新心愿</h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div class="md:col-span-2">
-                  <label class="block text-text-light mb-2">心愿名称</label>
-                  <input type="text" id="wish-title" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="输入心愿名称">
+                  <label class="f-label block mb-2">心愿名称</label>
+                  <input type="text" id="wish-title" class="w-full" placeholder="输入心愿名称">
                 </div>
                 <div>
-                  <label class="block text-text-light mb-2">所需积分</label>
-                  <input type="number" id="wish-points" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="50" min="1" max="1000">
+                  <label class="f-label block mb-2">所需积分</label>
+                  <input type="number" id="wish-points" class="w-full" value="50" min="1" max="1000">
                 </div>
                 <div class="md:col-span-2">
-                  <label class="block text-text-light mb-2">心愿描述（可选）</label>
-                  <textarea id="wish-description" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" rows="2" placeholder="描述你的心愿"></textarea>
+                  <label class="f-label block mb-2">心愿描述（可选）</label>
+                  <textarea id="wish-description" class="w-full" rows="2" placeholder="描述你的心愿"></textarea>
                 </div>
               </div>
-              <button id="add-wish-btn" class="bg-primary text-white px-6 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300">
+              <button id="add-wish-btn" class="f-btn f-btn--solid">
                 <i class="fa fa-plus mr-2"></i>添加心愿
               </button>
             </div>
@@ -282,19 +351,21 @@
         </div>
       </div>
     </div>
-  </div>
 
+    <div class="f-foot"><span>PomoReward · 数据保存在你的浏览器</span></div>
+  </div>
   <!-- 说明模态框 -->
   <div id="info-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+    <div class="modal-box p-7 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-6 pb-4 border-b border-neutral-dark">
-        <h3 class="text-2xl font-semibold text-primary">关于PomoReward</h3>
-        <button id="close-info-modal" class="text-text-light hover:text-text text-xl">
+        <div>
+          <h3 class="modal-title text-primary">关于 PomoReward</h3>
+        </div>
+        <button id="close-info-modal" class="modal-close text-text-light hover:text-text text-xl">
           <i class="fa fa-times"></i>
         </button>
       </div>
-      
-      <!-- 功能说明 -->
+
       <div class="mb-8">
         <h4 class="text-xl font-semibold mb-4 flex items-center">
           <i class="fa fa-list-ul text-primary mr-2"></i>功能说明
@@ -318,8 +389,7 @@
           </div>
         </div>
       </div>
-      
-      <!-- 作者信息 -->
+
       <div class="mb-8">
         <h4 class="text-xl font-semibold mb-4 flex items-center">
           <i class="fa fa-user text-primary mr-2"></i>作者信息
@@ -329,8 +399,7 @@
           <p class="mb-2"><span class="font-medium text-text">邮箱：</span>frey1799504732@gmail.com</p>
         </div>
       </div>
-      
-      <!-- 版本信息 -->
+
       <div class="mb-8">
         <h4 class="text-xl font-semibold mb-4 flex items-center">
           <i class="fa fa-tag text-primary mr-2"></i>版本信息
@@ -361,8 +430,7 @@
           </div>
         </div>
       </div>
-      
-      <!-- GitHub链接 -->
+
       <div>
         <h4 class="text-xl font-semibold mb-4 flex items-center">
           <i class="fa fa-github text-primary mr-2"></i>开源地址
@@ -380,37 +448,36 @@
 
   <!-- 专注模块管理模态框 -->
   <div id="module-manager-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <div class="modal-box p-7 w-full max-w-md">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-semibold">管理专注模块</h3>
-        <button id="close-module-manager" class="text-text-light hover:text-text">
+        <div>
+          <h3 class="modal-title">管理专注模块</h3>
+        </div>
+        <button id="close-module-manager" class="modal-close text-text-light hover:text-text">
           <i class="fa fa-times"></i>
         </button>
       </div>
-      
-      <!-- 添加新模块 -->
+
       <div class="border-b border-neutral-dark pb-4 mb-4">
         <h4 class="font-medium mb-3">添加新模块</h4>
         <div class="grid grid-cols-2 gap-3 mb-3">
           <div>
-            <label class="block text-text-light text-sm mb-1">模块名称</label>
-            <input type="text" id="new-module-name" class="w-full px-3 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary text-sm" placeholder="例如：绘画">
+            <label class="f-label block mb-1">模块名称</label>
+            <input type="text" id="new-module-name" class="w-full text-sm" placeholder="例如：写作">
           </div>
           <div>
-            <label class="block text-text-light text-sm mb-1">每分钟积分</label>
-            <input type="number" id="new-module-points" class="w-full px-3 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary text-sm" value="1" min="1" max="10">
+            <label class="f-label block mb-1">每分钟积分</label>
+            <input type="number" id="new-module-points" class="w-full text-sm" value="1" min="1" max="10">
           </div>
         </div>
-        <button id="add-new-module" class="bg-primary text-white px-4 py-2 rounded-lg text-sm shadow hover:bg-opacity-90 transition-all-300">
+        <button id="add-new-module" class="f-btn f-btn--green text-sm">
           <i class="fa fa-plus mr-1"></i>添加
         </button>
       </div>
-      
-      <!-- 现有模块列表 -->
+
       <div>
         <h4 class="font-medium mb-3">现有模块</h4>
         <div id="module-list" class="space-y-2 max-h-60 overflow-y-auto">
-          <!-- 模块项动态生成 -->
         </div>
       </div>
     </div>
@@ -418,67 +485,63 @@
 
   <!-- 编辑模块模态框 -->
   <div id="edit-module-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md">
-      <h3 class="text-xl font-semibold mb-4">编辑模块</h3>
+    <div class="modal-box p-7 w-full max-w-md">
+      <h3 class="modal-title mb-4">编辑模块</h3>
       <input type="hidden" id="edit-module-id">
       <div class="grid grid-cols-2 gap-3 mb-4">
         <div>
-          <label class="block text-text-light text-sm mb-1">模块名称</label>
-          <input type="text" id="edit-module-name" class="w-full px-3 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary text-sm">
+          <label class="f-label block mb-1">模块名称</label>
+          <input type="text" id="edit-module-name" class="w-full text-sm">
         </div>
         <div>
-          <label class="block text-text-light text-sm mb-1">每分钟积分</label>
-          <input type="number" id="edit-module-points" class="w-full px-3 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary text-sm" min="1" max="10">
+          <label class="f-label block mb-1">每分钟积分</label>
+          <input type="number" id="edit-module-points" class="w-full text-sm" min="1" max="10">
         </div>
       </div>
       <div class="flex justify-end gap-3">
-        <button id="cancel-edit-module" class="px-4 py-2 border border-neutral-dark rounded-lg hover:bg-neutral transition-all-300 text-sm">取消</button>
-        <button id="save-edit-module" class="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300 text-sm">保存</button>
+        <button id="cancel-edit-module" class="f-btn text-sm">取消</button>
+        <button id="save-edit-module" class="f-btn f-btn--green text-sm">保存</button>
       </div>
     </div>
   </div>
 
   <!-- 自定义专注模块模态框（兼容旧逻辑） -->
   <div id="custom-module-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md">
-      <h3 class="text-xl font-semibold mb-4">自定义专注模块</h3>
+    <div class="modal-box p-7 w-full max-w-md">
+      <h3 class="modal-title mb-4">自定义专注模块</h3>
       <div class="mb-4">
-        <label class="block text-text-light mb-2">模块名称</label>
-        <input type="text" id="custom-module-name" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" placeholder="输入模块名称">
+        <label class="f-label block mb-2">模块名称</label>
+        <input type="text" id="custom-module-name" class="w-full" placeholder="输入模块名称">
       </div>
       <div class="mb-6">
-        <label class="block text-text-light mb-2">每分钟积分</label>
-        <input type="number" id="custom-module-points" class="w-full px-4 py-2 rounded-lg border border-neutral-dark focus:outline-none focus:ring-2 focus:ring-secondary" value="1" min="1" max="10">
+        <label class="f-label block mb-2">每分钟积分</label>
+        <input type="number" id="custom-module-points" class="w-full" value="1" min="1" max="10">
       </div>
       <div class="flex justify-end gap-3">
-        <button id="cancel-custom-module" class="px-4 py-2 border border-neutral-dark rounded-lg hover:bg-neutral transition-all-300">取消</button>
-        <button id="save-custom-module" class="bg-primary text-white px-4 py-2 rounded-lg shadow hover:bg-opacity-90 transition-all-300">保存</button>
+        <button id="cancel-custom-module" class="f-btn">取消</button>
+        <button id="save-custom-module" class="f-btn f-btn--green">保存</button>
       </div>
     </div>
   </div>
 
   <!-- 全局重置确认模态框 -->
   <div id="global-reset-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+    <div class="modal-box p-7 w-full max-w-md">
       <div class="text-center mb-6">
         <i class="fa fa-warning text-4xl text-amber-500 mb-4"></i>
-        <h3 class="text-xl font-semibold text-red-500">警告！</h3>
-        <p class="text-text-light mt-2">此操作将清空所有任务、心愿、积分和自定义模块，恢复到初始状态。</p>
-        <p class="text-red-500 font-medium mt-1">该操作不可撤销！</p>
+        <h3 class="modal-title" style="color:var(--green-700);">警告！</h3>
+        <p class="text-text-light mt-3">此操作将清空所有任务、心愿、积分和自定义模块，恢复到初始状态。</p>
+        <p class="font-medium mt-1" style="color:var(--green-700);">该操作不可撤销！</p>
       </div>
       <div class="flex justify-center gap-4">
-        <button id="cancel-global-reset" class="px-6 py-2 border border-neutral-dark rounded-lg hover:bg-neutral transition-all-300">
-          取消
-        </button>
-        <button id="confirm-global-reset" class="px-6 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition-all-300">
-          确认重置
-        </button>
+        <button id="cancel-global-reset" class="f-btn">取消</button>
+        <button id="confirm-global-reset" class="f-btn" style="background:var(--green-700); border-color:var(--green-700); color:var(--paper);">确认重置</button>
       </div>
     </div>
   </div>
 
   <!-- 提示弹窗 -->
-  <div id="task-complete-toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all-300 z-50 flex items-center">
+  <div id="task-complete-toast" class="toast-frey fixed bottom-4 right-4 px-6 py-4 transform translate-y-20 opacity-0 transition-all-300 z-50 flex items-center">
     <i class="fa fa-check text-2xl mr-3"></i>
     <div>
       <p class="font-medium">任务完成！</p>
@@ -486,7 +549,7 @@
     </div>
   </div>
 
-  <div id="wish-redeem-toast" class="fixed bottom-4 right-4 bg-accent text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all-300 z-50 flex items-center">
+  <div id="wish-redeem-toast" class="toast-frey fixed bottom-4 right-4 px-6 py-4 transform translate-y-20 opacity-0 transition-all-300 z-50 flex items-center">
     <i class="fa fa-star text-2xl mr-3"></i>
     <div>
       <p class="font-medium">心愿兑换成功！</p>
@@ -494,7 +557,7 @@
     </div>
   </div>
 
-  <div id="focus-complete-toast" class="fixed bottom-4 right-4 bg-primary text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all-300 z-50 flex items-center">
+  <div id="focus-complete-toast" class="toast-frey fixed bottom-4 right-4 px-6 py-4 transform translate-y-20 opacity-0 transition-all-300 z-50 flex items-center">
     <i class="fa fa-check-circle text-2xl mr-3"></i>
     <div>
       <p class="font-medium">专注时间完成！</p>
@@ -502,7 +565,54 @@
     </div>
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script>
+  (function(){
+    var fine = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.body.classList.add('has-cursor');
+    var dot = document.getElementById('cur-dot'), ring = document.getElementById('cur-ring');
+    if(fine && dot && ring && !reduce){
+      var mx=innerWidth/2, my=innerHeight/2, rx=mx, ry=my;
+      document.addEventListener('mousemove', function(e){
+        mx=e.clientX; my=e.clientY;
+        dot.style.transform='translate('+mx+'px,'+my+'px)';
+      });
+      (function loop(){
+        rx+=(mx-rx)*.16; ry+=(my-ry)*.16;
+        ring.style.transform='translate('+rx+'px,'+ry+'px)';
+        requestAnimationFrame(loop);
+      })();
+      document.addEventListener('mousedown', function(){ ring.classList.add('is-down'); });
+      document.addEventListener('mouseup', function(){ ring.classList.remove('is-down'); });
+      document.addEventListener('mouseover', function(e){
+        if(e.target.closest && e.target.closest('button, a, input, select, textarea, .task-item, .wish-item')) ring.classList.add('is-hover');
+      });
+      document.addEventListener('mouseout', function(e){
+        if(e.target.closest && e.target.closest('button, a, input, select, textarea, .task-item, .wish-item')) ring.classList.remove('is-hover');
+      });
+    } else { dot.style.display='none'; ring.style.display='none'; }
+
+    var bar = document.getElementById('loadbar'), pct = document.getElementById('loadpct'), p = 0;
+    var t = setInterval(function(){
+      p = Math.min(100, p + Math.random()*18 + 6);
+      if(bar){ bar.style.transform='scaleX('+(p/100)+')'; }
+      if(pct){ pct.textContent = Math.round(p)+'%'; }
+      if(p>=100){ clearInterval(t); setTimeout(function(){ var l=document.getElementById('loader'); if(l){ l.classList.add('done'); setTimeout(function(){ l.style.display='none'; }, 950); } }, 320); }
+    }, 130);
+    if(reduce){ clearInterval(t); var l=document.getElementById('loader'); if(l){ l.style.display='none'; } }
+
+    var els = document.querySelectorAll('[data-reveal]');
+    if(reduce){ els.forEach(function(el){ el.classList.add('is-in'); }); }
+    else if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('is-in'); io.unobserve(en.target); } });
+      }, {threshold:.12});
+      els.forEach(function(el){ io.observe(el); });
+    } else { els.forEach(function(el){ el.classList.add('is-in'); }); }
+  })();
+  </script>
+
+  <script>
     // 工具函数：格式化日期显示
     function formatCurrentDate() {
       const now = new Date();
@@ -1509,9 +1619,7 @@
       PomodoroTimer.init();
       UI.init();
     });
+  
   </script>
 </body>
 </html>
-
-
-
